@@ -50,14 +50,14 @@ export default function AddEditModal({
       alert("Please upload an image");
       return;
     }
-    if (!editCard && !audioFile) {
-      alert("Please upload an audio message");
-      return;
-    }
+    // if (!editCard && !audioFile) {
+    //   alert("Please record or upload an audio message");
+    //   return;
+    // }
 
     setIsSubmitting(true);
     try {
-      await onSave({ name, imageFile, audioFile });
+      await onSave({ name, imageFile, audioFile: null });
       handleClose();
     } catch (error) {
       console.error("Error saving:", error);
@@ -70,7 +70,7 @@ export default function AddEditModal({
   const handleClose = () => {
     setName("");
     setImageFile(null);
-    setAudioFile(null);
+    // setAudioFile(null);
     setImagePreview(null);
     onClose();
   };
@@ -133,15 +133,15 @@ export default function AddEditModal({
             />
           </div>
 
-          <div>
+          {/* <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Voice Message
             </label>
-            <AudioUpload
-              onAudioSelect={setAudioFile}
+            <VoiceRecorder
+              onAudioReady={setAudioFile}
               existingAudioUrl={editCard?.audio_url}
             />
-          </div>
+          </div> */}
 
           <div className="flex gap-4 pt-4">
             <button

@@ -57,61 +57,32 @@ export default function Home() {
 
       // Upload image if provided
       if (data.imageFile) {
-        console.log("Uploading image:", data.imageFile.name);
-        // Sanitize filename - remove special characters and spaces
-        const sanitizedName = data.imageFile.name
-          .replace(/[^a-zA-Z0-9._-]/g, "_")
-          .replace(/_{2,}/g, "_");
-        const imageFileName = `${Date.now()}_${sanitizedName}`;
-        const { data: uploadData, error: imageError } = await supabase.storage
+        const imageFileName = `${Date.now()}_${data.imageFile.name}`;
+        const { error: imageError } = await supabase.storage
           .from("birthday-cards")
           .upload(imageFileName, data.imageFile);
-
-        if (imageError) {
-          console.error("Image upload error:", imageError);
-          throw imageError;
-        }
-
-        console.log("Upload successful:", uploadData);
+        if (imageError) throw imageError;
         const {
           data: { publicUrl },
         } = supabase.storage.from("birthday-cards").getPublicUrl(imageFileName);
         imageUrl = publicUrl;
-        console.log("Public URL:", publicUrl);
       }
 
       // Upload audio if provided
       if (data.audioFile) {
-        console.log("Uploading audio:", data.audioFile.name);
-        // Sanitize filename - remove special characters and spaces
-        const sanitizedName = data.audioFile.name
-          .replace(/[^a-zA-Z0-9._-]/g, "_")
-          .replace(/_{2,}/g, "_");
-        const audioFileName = `${Date.now()}_${sanitizedName}`;
-        const { data: uploadData, error: audioError } = await supabase.storage
+        const audioFileName = `${Date.now()}_${data.audioFile.name}`;
+        const { error: audioError } = await supabase.storage
           .from("birthday-cards")
           .upload(audioFileName, data.audioFile);
-
-        if (audioError) {
-          console.error("Audio upload error:", audioError);
-          throw audioError;
-        }
-
-        console.log("Audio upload successful:", uploadData);
+        if (audioError) throw audioError;
         const {
           data: { publicUrl },
         } = supabase.storage.from("birthday-cards").getPublicUrl(audioFileName);
         audioUrl = publicUrl;
-        console.log("Audio public URL:", publicUrl);
       }
 
       // Insert or update card
       if (editingCard) {
-        console.log("Updating card:", {
-          name: data.name,
-          image_url: imageUrl,
-          audio_url: audioUrl,
-        });
         const { error } = await supabase
           .from("birthday_cards")
           .update({
@@ -121,25 +92,14 @@ export default function Home() {
             updated_at: new Date().toISOString(),
           })
           .eq("id", editingCard.id);
-        if (error) {
-          console.error("Update error:", error);
-          throw error;
-        }
+        if (error) throw error;
       } else {
-        console.log("Inserting card:", {
-          name: data.name,
-          image_url: imageUrl,
-          audio_url: audioUrl,
-        });
         const { error } = await supabase.from("birthday_cards").insert({
           name: data.name,
           image_url: imageUrl,
           audio_url: audioUrl,
         });
-        if (error) {
-          console.error("Insert error:", error);
-          throw error;
-        }
+        if (error) throw error;
       }
 
       await fetchCards();

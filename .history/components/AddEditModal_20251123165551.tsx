@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { BirthdayCard } from "@/lib/supabase";
 import ImageUpload from "./ImageUpload";
-import AudioUpload from "./AudioUpload";
+import VoiceRecorder from "./VoiceRecorder";
 
 interface AddEditModalProps {
   isOpen: boolean;
@@ -51,7 +51,7 @@ export default function AddEditModal({
       return;
     }
     if (!editCard && !audioFile) {
-      alert("Please upload an audio message");
+      alert("Please record or upload an audio message");
       return;
     }
 
@@ -89,18 +89,8 @@ export default function AddEditModal({
               onClick={handleClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
-              <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
@@ -137,8 +127,8 @@ export default function AddEditModal({
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Voice Message
             </label>
-            <AudioUpload
-              onAudioSelect={setAudioFile}
+            <VoiceRecorder
+              onAudioReady={setAudioFile}
               existingAudioUrl={editCard?.audio_url}
             />
           </div>
@@ -157,11 +147,7 @@ export default function AddEditModal({
               disabled={isSubmitting}
               className="flex-1 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting
-                ? "Saving..."
-                : editCard
-                ? "Update Card"
-                : "Add Card"}
+              {isSubmitting ? "Saving..." : editCard ? "Update Card" : "Add Card"}
             </button>
           </div>
         </form>

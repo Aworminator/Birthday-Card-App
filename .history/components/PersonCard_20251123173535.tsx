@@ -67,17 +67,16 @@ export default function PersonCard({
     const x = e.clientX - rect.left;
     const percentage = x / rect.width;
     const time = percentage * duration;
-
+    
     audio.currentTime = time;
     setCurrentTime(time);
-
+    
     // Auto-play when clicking to seek
     if (!isPlaying) {
       audio.play();
       setIsPlaying(true);
     }
-  };
-  const formatTime = (seconds: number) => {
+  };  const formatTime = (seconds: number) => {
     if (isNaN(seconds)) return "0:00";
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -104,12 +103,12 @@ export default function PersonCard({
 
         <div className="space-y-3">
           {/* Custom Audio Player */}
-          <div
+          <div 
             onClick={handleTimelineClick}
             className="relative bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-3 rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all cursor-pointer overflow-hidden"
           >
             <audio ref={audioRef} src={card.audio_url} />
-
+            
             {/* Progress overlay - lighter color */}
             <div
               className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-300 to-teal-400 transition-all pointer-events-none"
@@ -117,42 +116,26 @@ export default function PersonCard({
                 width: `${(currentTime / duration) * 100}%`,
               }}
             />
-
+            
             {/* Content */}
             <div className="relative z-10 flex items-center justify-center gap-2 font-medium">
               {isPlaying ? (
                 <>
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                   Pause
                 </>
               ) : (
                 <>
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                      clipRule="evenodd"
-                    />
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                   </svg>
                   Play Message
                 </>
               )}
             </div>
-
+            
             {/* Time display */}
             <div className="relative z-10 flex items-center justify-between px-4 mt-1 text-xs">
               <span>{formatTime(currentTime)}</span>

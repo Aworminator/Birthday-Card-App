@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { BirthdayCard } from "@/lib/supabase";
 import ImageUpload from "./ImageUpload";
-import AudioUpload from "./AudioUpload";
+import VoiceRecorder from "./VoiceRecorder";
 
 interface AddEditModalProps {
   isOpen: boolean;
@@ -50,10 +50,10 @@ export default function AddEditModal({
       alert("Please upload an image");
       return;
     }
-    if (!editCard && !audioFile) {
-      alert("Please upload an audio message");
-      return;
-    }
+    // if (!editCard && !audioFile) {
+    //   alert("Please record or upload an audio message");
+    //   return;
+    // }
 
     setIsSubmitting(true);
     try {
@@ -137,8 +137,8 @@ export default function AddEditModal({
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Voice Message
             </label>
-            <AudioUpload
-              onAudioSelect={setAudioFile}
+            <VoiceRecorder
+              onAudioReady={setAudioFile}
               existingAudioUrl={editCard?.audio_url}
             />
           </div>

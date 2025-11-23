@@ -107,11 +107,7 @@ export default function Home() {
 
       // Insert or update card
       if (editingCard) {
-        console.log("Updating card:", {
-          name: data.name,
-          image_url: imageUrl,
-          audio_url: audioUrl,
-        });
+        console.log("Updating card:", { name: data.name, image_url: imageUrl, audio_url: audioUrl });
         const { error } = await supabase
           .from("birthday_cards")
           .update({

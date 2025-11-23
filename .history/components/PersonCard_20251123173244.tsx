@@ -70,13 +70,8 @@ export default function PersonCard({
 
     audio.currentTime = time;
     setCurrentTime(time);
-
-    // Auto-play when clicking to seek
-    if (!isPlaying) {
-      audio.play();
-      setIsPlaying(true);
-    }
   };
+
   const formatTime = (seconds: number) => {
     if (isNaN(seconds)) return "0:00";
     const mins = Math.floor(seconds / 60);
@@ -104,59 +99,64 @@ export default function PersonCard({
 
         <div className="space-y-3">
           {/* Custom Audio Player */}
-          <div
-            onClick={handleTimelineClick}
-            className="relative bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-3 rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all cursor-pointer overflow-hidden"
-          >
+          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl p-4">
             <audio ref={audioRef} src={card.audio_url} />
 
-            {/* Progress overlay - lighter color */}
-            <div
-              className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-300 to-teal-400 transition-all pointer-events-none"
-              style={{
-                width: `${(currentTime / duration) * 100}%`,
-              }}
-            />
-
-            {/* Content */}
-            <div className="relative z-10 flex items-center justify-center gap-2 font-medium">
-              {isPlaying ? (
-                <>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={toggleAudio}
+                className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md flex items-center justify-center"
+              >
+                {isPlaying ? (
                   <svg
                     className="w-5 h-5"
                     fill="currentColor"
-                    viewBox="0 0 20 20"
+                    viewBox="0 0 24 24"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
+                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
                   </svg>
-                  Pause
-                </>
-              ) : (
-                <>
+                ) : (
                   <svg
-                    className="w-5 h-5"
+                    className="w-5 h-5 ml-0.5"
                     fill="currentColor"
-                    viewBox="0 0 20 20"
+                    viewBox="0 0 24 24"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                      clipRule="evenodd"
-                    />
+                    <path d="M8 5v14l11-7z" />
                   </svg>
-                  Play Message
-                </>
-              )}
-            </div>
+                )}
+              </button>
 
-            {/* Time display */}
-            <div className="relative z-10 flex items-center justify-between px-4 mt-1 text-xs">
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
+              <div className="flex-1">
+                <div className="text-sm font-semibold text-gray-700 mb-2">
+                  {isPlaying ? "Playing message..." : "Play message"}
+                </div>
+                <div className="flex items-center gap-2 px-2">
+                  <span className="text-xs text-gray-600 font-medium w-10">
+                    {formatTime(currentTime)}
+                  </span>
+                  <div className="flex-1 px-2">
+                    <input
+                      type="range"
+                      min="0"
+                      max={duration || 0}
+                      value={currentTime}
+                      onChange={handleSeek}
+                      className="w-full h-2 rounded-lg appearance-none cursor-pointer slider"
+                      style={{
+                        background: `linear-gradient(to right, rgb(167, 243, 208) 0%, rgb(167, 243, 208) ${
+                          (currentTime / duration) * 100
+                        }%, rgb(16, 185, 129) ${
+                          (currentTime / duration) * 100
+                        }%, rgb(16, 185, 129) 100%)`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-xs text-gray-600 font-medium w-10 text-right">
+                    {formatTime(duration)}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 

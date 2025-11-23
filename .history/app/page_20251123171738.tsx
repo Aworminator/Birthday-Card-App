@@ -107,17 +107,13 @@ export default function Home() {
 
       // Insert or update card
       if (editingCard) {
-        console.log("Updating card:", {
-          name: data.name,
-          image_url: imageUrl,
-          audio_url: audioUrl,
-        });
+        console.log("Updating card:", { name: data.name, image_url: imageUrl });
         const { error } = await supabase
           .from("birthday_cards")
           .update({
             name: data.name,
             image_url: imageUrl,
-            audio_url: audioUrl,
+            audio_url: editingCard.audio_url || "",
             updated_at: new Date().toISOString(),
           })
           .eq("id", editingCard.id);
@@ -129,12 +125,11 @@ export default function Home() {
         console.log("Inserting card:", {
           name: data.name,
           image_url: imageUrl,
-          audio_url: audioUrl,
         });
         const { error } = await supabase.from("birthday_cards").insert({
           name: data.name,
           image_url: imageUrl,
-          audio_url: audioUrl,
+          audio_url: "",
         });
         if (error) {
           console.error("Insert error:", error);

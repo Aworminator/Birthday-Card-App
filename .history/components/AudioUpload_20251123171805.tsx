@@ -2,38 +2,34 @@
 
 import { useState, useRef, useEffect } from "react";
 
-interface ImageUploadProps {
-  onImageSelect: (file: File | null) => void;
-  existingImageUrl?: string;
-  preview: string | null;
-  setPreview: (url: string | null) => void;
+interface AudioUploadProps {
+  onAudioSelect: (file: File | null) => void;
+  existingAudioUrl?: string;
 }
 
-export default function ImageUpload({
-  onImageSelect,
-  existingImageUrl,
-  preview,
-  setPreview,
-}: ImageUploadProps) {
+export default function AudioUpload({
+  onAudioSelect,
+  existingAudioUrl,
+}: AudioUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (existingImageUrl && !preview) {
-      setPreview(existingImageUrl);
+    if (existingAudioUrl && !audioUrl) {
+      setAudioUrl(existingAudioUrl);
     }
-  }, [existingImageUrl, preview, setPreview]);
+  }, [existingAudioUrl, audioUrl]);
 
   const handleFileChange = (file: File | null) => {
-    if (file && file.type.startsWith("image/")) {
-      onImageSelect(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (file && file.type.startsWith("audio/")) {
+      setAudioFile(file);
+      onAudioSelect(file);
+      const url = URL.createObjectURL(file);
+      setAudioUrl(url);
     } else if (file) {
-      alert("Please upload an image file");
+      alert("Please upload an audio file");
     }
   };
 
@@ -58,8 +54,9 @@ export default function ImageUpload({
   };
 
   const handleRemove = () => {
-    onImageSelect(null);
-    setPreview(null);
+    setAudioFile(null);
+    setAudioUrl(null);
+    onAudioSelect(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -70,36 +67,25 @@ export default function ImageUpload({
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept="audio/*"
         onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
         className="hidden"
       />
 
-      {preview ? (
-        <div className="relative">
-          <img
-            src={preview}
-            alt="Preview"
-            className="w-full h-64 object-cover rounded-xl border-2 border-gray-200"
-          />
+      {audioUrl ? (
+        <div className="space-y-3">
+          <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-4">
+            <audio controls className="w-full">
+              <source src={audioUrl} />
+              Your browser does not support the audio element.
+            </audio>
+          </div>
           <button
             type="button"
             onClick={handleRemove}
-            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg"
+            className="w-full px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-semibold"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            Remove Audio
           </button>
         </div>
       ) : (
@@ -125,14 +111,17 @@ export default function ImageUpload({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
               />
             </svg>
             <div>
               <p className="text-gray-700 font-semibold">
-                Drag and drop an image here
+                Drag and drop an audio file here
               </p>
               <p className="text-gray-500 text-sm mt-1">or click to browse</p>
+              <p className="text-gray-400 text-xs mt-2">
+                Supported formats: MP3, WAV, M4A, OGG
+              </p>
             </div>
           </div>
         </div>

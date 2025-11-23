@@ -70,7 +70,7 @@ export default function AddEditModal({
   const handleClose = () => {
     setName("");
     setImageFile(null);
-    setAudioFile(null);
+    // setAudioFile(null);
     setImagePreview(null);
     onClose();
   };
@@ -133,15 +133,15 @@ export default function AddEditModal({
             />
           </div>
 
-          <div>
+          {/* <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Voice Message
             </label>
-            <AudioUpload
-              onAudioSelect={setAudioFile}
+            <VoiceRecorder
+              onAudioReady={setAudioFile}
               existingAudioUrl={editCard?.audio_url}
             />
-          </div>
+          </div> */}
 
           <div className="flex gap-4 pt-4">
             <button
