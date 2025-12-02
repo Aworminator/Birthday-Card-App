@@ -10,12 +10,7 @@ interface CardGridProps {
   viewMode?: boolean;
 }
 
-export default function CardGrid({
-  cards,
-  onEdit,
-  onDelete,
-  viewMode = false,
-}: CardGridProps) {
+export default function CardGrid({ cards, onEdit, onDelete, viewMode = false }: CardGridProps) {
   if (cards.length === 0) {
     return (
       <div className="text-center py-16">
@@ -34,7 +29,6 @@ export default function CardGrid({
           card={card}
           onEdit={onEdit}
           onDelete={onDelete}
-          viewMode={viewMode}
         />
       ))}
     </div>

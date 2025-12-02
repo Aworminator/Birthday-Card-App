@@ -11,9 +11,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState(false);
-  const [background, setBackground] = useState<
-    "birthday" | "christmas" | "neutral"
-  >("neutral");
+  const [background, setBackground] = useState<"birthday" | "christmas" | "neutral">("neutral");
 
   useEffect(() => {
     fetchCards();
@@ -170,9 +168,8 @@ export default function Home() {
   };
 
   const getBackgroundClass = () => {
-    if (!viewMode)
-      return "bg-gradient-to-br from-gray-50 via-white to-gray-100";
-
+    if (!viewMode) return "bg-gradient-to-br from-gray-50 via-white to-gray-100";
+    
     switch (background) {
       case "birthday":
         return "bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100";
@@ -186,9 +183,7 @@ export default function Home() {
   };
 
   return (
-    <main
-      className={`min-h-screen transition-colors duration-500 ${getBackgroundClass()}`}
-    >
+    <main className={`min-h-screen transition-colors duration-500 ${getBackgroundClass()}`}>
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -206,11 +201,7 @@ export default function Home() {
                 <div className="relative">
                   <select
                     value={background}
-                    onChange={(e) =>
-                      setBackground(
-                        e.target.value as "birthday" | "christmas" | "neutral"
-                      )
-                    }
+                    onChange={(e) => setBackground(e.target.value as "birthday" | "christmas" | "neutral")}
                     className="appearance-none px-4 py-3 pr-10 bg-white border-2 border-gray-200 text-gray-700 rounded-xl hover:border-gray-300 transition-all shadow-md hover:shadow-lg font-semibold cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="neutral">Neutral Background</option>

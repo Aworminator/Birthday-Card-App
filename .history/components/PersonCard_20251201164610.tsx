@@ -8,14 +8,12 @@ interface PersonCardProps {
   card: BirthdayCard;
   onEdit: (card: BirthdayCard) => void;
   onDelete: (id: string) => void;
-  viewMode?: boolean;
 }
 
 export default function PersonCard({
   card,
   onEdit,
   onDelete,
-  viewMode = false,
 }: PersonCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -174,22 +172,20 @@ export default function PersonCard({
             )}
           </div>
 
-          {!viewMode && (
-            <div className="flex gap-2">
-              <button
-                onClick={() => onEdit(card)}
-                className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => onDelete(card.id)}
-                className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg hover:bg-red-100 transition-colors duration-200 font-medium"
-              >
-                Delete
-              </button>
-            </div>
-          )}
+          <div className="flex gap-2">
+            <button
+              onClick={() => onEdit(card)}
+              className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => onDelete(card.id)}
+              className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg hover:bg-red-100 transition-colors duration-200 font-medium"
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </div>
 

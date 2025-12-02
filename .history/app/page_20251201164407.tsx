@@ -10,10 +10,6 @@ export default function Home() {
   const [editingCard, setEditingCard] = useState<BirthdayCard | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState(false);
-  const [background, setBackground] = useState<
-    "birthday" | "christmas" | "neutral"
-  >("neutral");
 
   useEffect(() => {
     fetchCards();
@@ -169,26 +165,8 @@ export default function Home() {
     }
   };
 
-  const getBackgroundClass = () => {
-    if (!viewMode)
-      return "bg-gradient-to-br from-gray-50 via-white to-gray-100";
-
-    switch (background) {
-      case "birthday":
-        return "bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100";
-      case "christmas":
-        return "bg-gradient-to-br from-red-100 via-green-100 to-red-100";
-      case "neutral":
-        return "bg-gradient-to-br from-slate-100 via-gray-100 to-stone-100";
-      default:
-        return "bg-gradient-to-br from-gray-50 via-white to-gray-100";
-    }
-  };
-
   return (
-    <main
-      className={`min-h-screen transition-colors duration-500 ${getBackgroundClass()}`}
-    >
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -202,43 +180,9 @@ export default function Home() {
               </p>
             </div>
             <div className="flex gap-3">
-              {viewMode && (
-                <div className="relative">
-                  <select
-                    value={background}
-                    onChange={(e) =>
-                      setBackground(
-                        e.target.value as "birthday" | "christmas" | "neutral"
-                      )
-                    }
-                    className="appearance-none px-4 py-3 pr-10 bg-white border-2 border-gray-200 text-gray-700 rounded-xl hover:border-gray-300 transition-all shadow-md hover:shadow-lg font-semibold cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  >
-                    <option value="neutral">Neutral Background</option>
-                    <option value="birthday">Birthday Background</option>
-                    <option value="christmas">Christmas Background</option>
-                  </select>
-                  <svg
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-              )}
               <button
-                onClick={() => setViewMode(!viewMode)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all shadow-md hover:shadow-lg font-semibold ${
-                  viewMode
-                    ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+                onClick={handleAddClick}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md hover:shadow-lg font-semibold"
               >
                 <svg
                   className="w-5 h-5"
@@ -250,38 +194,11 @@ export default function Home() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    d="M12 4v16m8-8H4"
                   />
                 </svg>
-                {viewMode ? "Exit View Mode" : "View Mode"}
+                Add New Card
               </button>
-              {!viewMode && (
-                <button
-                  onClick={handleAddClick}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md hover:shadow-lg font-semibold"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
-                  Add New Card
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -313,7 +230,6 @@ export default function Home() {
             cards={cards}
             onEdit={handleEditClick}
             onDelete={handleDelete}
-            viewMode={viewMode}
           />
         )}
       </div>
