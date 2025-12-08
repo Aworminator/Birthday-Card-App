@@ -29,9 +29,9 @@ export default function CardGrid({
   }
 
   return (
-    <div className="flex flex-wrap gap-8" style={{ width: "100%" }}>
+    <div className="flex flex-wrap gap-1" style={{ width: "100%" }}>
       {cards.map((card) => (
-        <div key={card.id} style={{ width: "350px", height: "350px" }}>
+        <div key={card.id} style={{ width: "500px", height: "500px" }}>
           <PersonCard
             card={card}
             onEdit={onEdit}

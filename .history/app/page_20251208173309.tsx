@@ -18,9 +18,6 @@ export default function Home() {
   const [savedTheme, setSavedTheme] = useState<
     "birthday" | "christmas" | "neutral"
   >("neutral");
-  const [customMusicUrl, setCustomMusicUrl] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [useDefaultMusic, setUseDefaultMusic] = useState(false);
 
   useEffect(() => {
     fetchCards();
@@ -267,82 +264,6 @@ export default function Home() {
     }
   };
 
-  const handleSaveTheme = () => {
-    setSavedTheme(background);
-    setThemeMode(false);
-    // Save music preference to localStorage
-    if (customMusicUrl) {
-      localStorage.setItem("customMusicUrl", customMusicUrl);
-    } else {
-      localStorage.removeItem("customMusicUrl");
-    }
-    localStorage.setItem("useDefaultMusic", useDefaultMusic.toString());
-  };
-
-  const handleEnterViewMode = () => {
-    // Load saved custom music and default music preference BEFORE entering view mode
-    const savedMusic = localStorage.getItem("customMusicUrl");
-    if (savedMusic) {
-      setCustomMusicUrl(savedMusic);
-    }
-    const savedUseDefault = localStorage.getItem("useDefaultMusic");
-    if (savedUseDefault === "true") {
-      setUseDefaultMusic(true);
-    }
-
-    setBackground(savedTheme);
-    setViewMode(true);
-    setIsPlaying(false); // Don't auto-play, let user click the Play button
-  };
-
-  const handleMusicUpload = async (file: File) => {
-    try {
-      // Sanitize filename
-      const sanitizedName = file.name
-        .replace(/[^a-zA-Z0-9._-]/g, "_")
-        .replace(/_{2,}/g, "_");
-      const musicFileName = `music_${Date.now()}_${sanitizedName}`;
-
-      const { data: uploadData, error: musicError } = await supabase.storage
-        .from("birthday-cards")
-        .upload(musicFileName, file);
-
-      if (musicError) {
-        console.error("Music upload error:", musicError);
-        throw musicError;
-      }
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("birthday-cards").getPublicUrl(musicFileName);
-
-      setCustomMusicUrl(publicUrl);
-      alert("Music uploaded successfully!");
-    } catch (error) {
-      console.error("Error uploading music:", error);
-      alert("Failed to upload music. Please try again.");
-    }
-  };
-
-  const getDefaultMusicUrl = () => {
-    switch (savedTheme) {
-      case "birthday":
-        return "/music/birthday.mp3";
-      case "christmas":
-        return "/music/christmas.mp3";
-      case "neutral":
-        return "/music/neutral.mp3";
-      default:
-        return null;
-    }
-  };
-
-  const getMusicUrl = () => {
-    if (customMusicUrl) return customMusicUrl;
-    if (useDefaultMusic) return getDefaultMusicUrl();
-    return null;
-  };
-
   const getBackgroundClass = () => {
     if (!viewMode && !themeMode)
       return "bg-gradient-to-br from-gray-50 via-white to-gray-100";
@@ -426,9 +347,40 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex gap-3">
+                {themeMode && (
+                <div className="relative">
+                  <select
+                    value={background}
+                    onChange={(e) =>
+                      setBackground(
+                        e.target.value as "birthday" | "christmas" | "neutral"
+                      )
+                    }
+                    className="appearance-none px-4 py-3 pr-10 bg-white border-2 border-gray-200 text-gray-700 rounded-xl hover:border-gray-300 transition-all shadow-md hover:shadow-lg font-semibold cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="neutral">Neutral Background</option>
+                    <option value="birthday">Birthday Background</option>
+                    <option value="christmas">Christmas Background</option>
+                  </select>
+                  <svg
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              )}
+              {themeMode && (
                 <button
-                  onClick={() => setThemeMode(true)}
-                  className="flex items-center gap-2 px-6 py-3 rounded-xl transition-all shadow-md hover:shadow-lg font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  onClick={handleSaveTheme}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md hover:shadow-lg font-semibold"
                 >
                   <svg
                     className="w-5 h-5"
@@ -440,36 +392,61 @@ export default function Home() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                      d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  Select Theme
+                  Save Theme
                 </button>
-                <button
-                  onClick={handleEnterViewMode}
-                  className="flex items-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition-all shadow-md hover:shadow-lg font-semibold"
+              )}
+              <button
+                onClick={() => setThemeMode(!themeMode)}
+                className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all shadow-md hover:shadow-lg font-semibold ${
+                  themeMode
+                    ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  </svg>
-                  View Mode
-                </button>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                  />
+                </svg>
+                {themeMode ? "Exit Theme Mode" : "Select Theme"}
+              </button>
+              <button
+                onClick={handleEnterViewMode}
+                className="flex items-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition-all shadow-md hover:shadow-lg font-semibold"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+                View Mode
+              </button>
+              {!themeMode && (
                 <button
                   onClick={handleAddClick}
                   className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md hover:shadow-lg font-semibold"
@@ -489,194 +466,8 @@ export default function Home() {
                   </svg>
                   Add New Card
                 </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Theme Selection Modal */}
-      {themeMode && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">
-              Select Theme & Music
-            </h2>
-
-            {/* Theme Selection */}
-            <div className="mb-8">
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Background Theme
-              </label>
-              <div className="relative">
-                <select
-                  value={background}
-                  onChange={(e) =>
-                    setBackground(
-                      e.target.value as "birthday" | "christmas" | "neutral"
-                    )
-                  }
-                  className="w-full appearance-none px-4 py-3 pr-10 bg-white border-2 border-gray-200 text-gray-700 rounded-xl hover:border-gray-300 transition-all shadow-md hover:shadow-lg font-semibold cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  <option value="neutral">Neutral Background</option>
-                  <option value="birthday">Birthday Background</option>
-                  <option value="christmas">Christmas Background</option>
-                </select>
-                <svg
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            {/* Music Upload */}
-            <div className="mb-8">
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Background Music (Optional)
-              </label>
-              <div className="flex items-center gap-3 mb-3">
-                <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all shadow-md hover:shadow-lg font-semibold cursor-pointer">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
-                    />
-                  </svg>
-                  {customMusicUrl ? "Change Music" : "Upload Music"}
-                  <input
-                    type="file"
-                    accept="audio/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleMusicUpload(file);
-                    }}
-                    className="hidden"
-                  />
-                </label>
-                {customMusicUrl && (
-                  <button
-                    onClick={() => setCustomMusicUrl(null)}
-                    className="px-3 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all shadow-md font-semibold"
-                    title="Remove custom music"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                )}
-              </div>
-              <button
-                onClick={() => setUseDefaultMusic(!useDefaultMusic)}
-                className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all shadow-md hover:shadow-lg font-semibold ${
-                  useDefaultMusic
-                    ? "bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white"
-                    : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                }`}
-              >
-                {useDefaultMusic ? (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                )}
-                Use Default Music
-              </button>
-              {customMusicUrl && (
-                <p className="text-sm text-gray-600 mt-2">
-                  ✓ Custom music uploaded
-                </p>
               )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={handleSaveTheme}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md hover:shadow-lg font-semibold"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                Save Theme
-              </button>
-              <button
-                onClick={() => setThemeMode(false)}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-all shadow-md hover:shadow-lg font-semibold"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-                Cancel
-              </button>
+              </div>
             </div>
           </div>
         </div>
@@ -684,111 +475,27 @@ export default function Home() {
 
       {/* Exit View Mode button */}
       {viewMode && (
-        <>
-          <div className="fixed top-4 right-4 z-50 flex gap-3">
-            {/* Play/Pause Music Button */}
-            <button
-              onClick={() => {
-                const audio = document.getElementById(
-                  "background-music"
-                ) as HTMLAudioElement;
-                if (audio) {
-                  if (isPlaying) {
-                    audio.pause();
-                    setIsPlaying(false);
-                  } else {
-                    audio.play().catch((err) => {
-                      console.error("Play failed:", err);
-                      alert(
-                        "Could not play audio. Browser may be blocking autoplay."
-                      );
-                    });
-                    setIsPlaying(true);
-                  }
-                }
-              }}
-              className="flex items-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all shadow-lg font-semibold"
+        <div className="fixed top-4 right-4 z-50">
+          <button
+            onClick={() => setViewMode(false)}
+            className="flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all shadow-lg font-semibold"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              {isPlaying ? (
-                <>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Pause
-                </>
-              ) : (
-                <>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Play
-                </>
-              )}
-            </button>
-            <button
-              onClick={() => {
-                setViewMode(false);
-                setIsPlaying(false);
-                const audio = document.getElementById(
-                  "background-music"
-                ) as HTMLAudioElement;
-                if (audio) audio.pause();
-              }}
-              className="flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all shadow-lg font-semibold"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-              Exit View Mode
-            </button>
-          </div>
-          {/* Background Music Audio Element */}
-          <audio
-            id="background-music"
-            src="/music/christmas.mp3"
-            loop
-            onError={(e) => {
-              console.error("Error loading music:", e);
-              setIsPlaying(false);
-            }}
-          />
-        </>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+            Exit View Mode
+          </button>
+        </div>
       )}
 
       {/* Content */}

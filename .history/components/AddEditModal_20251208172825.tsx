@@ -181,10 +181,8 @@ export default function AddEditModal({
                   </svg>
                   Saving...
                 </>
-              ) : editCard ? (
-                "Update Card"
               ) : (
-                "Add Card"
+                editCard ? "Update Card" : "Add Card"
               )}
             </button>
           </div>

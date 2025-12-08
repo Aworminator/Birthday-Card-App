@@ -20,7 +20,6 @@ export default function Home() {
   >("neutral");
   const [customMusicUrl, setCustomMusicUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [useDefaultMusic, setUseDefaultMusic] = useState(false);
 
   useEffect(() => {
     fetchCards();
@@ -276,23 +275,16 @@ export default function Home() {
     } else {
       localStorage.removeItem("customMusicUrl");
     }
-    localStorage.setItem("useDefaultMusic", useDefaultMusic.toString());
   };
 
   const handleEnterViewMode = () => {
-    // Load saved custom music and default music preference BEFORE entering view mode
+    setBackground(savedTheme);
+    setViewMode(true);
+    // Load saved custom music
     const savedMusic = localStorage.getItem("customMusicUrl");
     if (savedMusic) {
       setCustomMusicUrl(savedMusic);
     }
-    const savedUseDefault = localStorage.getItem("useDefaultMusic");
-    if (savedUseDefault === "true") {
-      setUseDefaultMusic(true);
-    }
-
-    setBackground(savedTheme);
-    setViewMode(true);
-    setIsPlaying(false); // Don't auto-play, let user click the Play button
   };
 
   const handleMusicUpload = async (file: File) => {
@@ -338,9 +330,7 @@ export default function Home() {
   };
 
   const getMusicUrl = () => {
-    if (customMusicUrl) return customMusicUrl;
-    if (useDefaultMusic) return getDefaultMusicUrl();
-    return null;
+    return customMusicUrl || getDefaultMusicUrl();
   };
 
   const getBackgroundClass = () => {
@@ -543,7 +533,7 @@ export default function Home() {
               <label className="block text-sm font-semibold text-gray-700 mb-3">
                 Background Music (Optional)
               </label>
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-3">
                 <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all shadow-md hover:shadow-lg font-semibold cursor-pointer">
                   <svg
                     className="w-5 h-5"
@@ -591,45 +581,6 @@ export default function Home() {
                   </button>
                 )}
               </div>
-              <button
-                onClick={() => setUseDefaultMusic(!useDefaultMusic)}
-                className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all shadow-md hover:shadow-lg font-semibold ${
-                  useDefaultMusic
-                    ? "bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white"
-                    : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                }`}
-              >
-                {useDefaultMusic ? (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                )}
-                Use Default Music
-              </button>
               {customMusicUrl && (
                 <p className="text-sm text-gray-600 mt-2">
                   ✓ Custom music uploaded
@@ -686,31 +637,25 @@ export default function Home() {
       {viewMode && (
         <>
           <div className="fixed top-4 right-4 z-50 flex gap-3">
-            {/* Play/Pause Music Button */}
-            <button
-              onClick={() => {
-                const audio = document.getElementById(
-                  "background-music"
-                ) as HTMLAudioElement;
-                if (audio) {
-                  if (isPlaying) {
-                    audio.pause();
-                    setIsPlaying(false);
-                  } else {
-                    audio.play().catch((err) => {
-                      console.error("Play failed:", err);
-                      alert(
-                        "Could not play audio. Browser may be blocking autoplay."
-                      );
-                    });
-                    setIsPlaying(true);
+            {/* Music control */}
+            {getMusicUrl() && (
+              <button
+                onClick={() => {
+                  const audio = document.getElementById(
+                    "background-music"
+                  ) as HTMLAudioElement;
+                  if (audio) {
+                    if (isPlaying) {
+                      audio.pause();
+                    } else {
+                      audio.play();
+                    }
+                    setIsPlaying(!isPlaying);
                   }
-                }
-              }}
-              className="flex items-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all shadow-lg font-semibold"
-            >
-              {isPlaying ? (
-                <>
+                }}
+                className="flex items-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all shadow-lg font-semibold"
+              >
+                {isPlaying ? (
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -724,10 +669,7 @@ export default function Home() {
                       d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  Pause
-                </>
-              ) : (
-                <>
+                ) : (
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -747,10 +689,10 @@ export default function Home() {
                       d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  Play
-                </>
-              )}
-            </button>
+                )}
+                {isPlaying ? "Pause" : "Play"} Music
+              </button>
+            )}
             <button
               onClick={() => {
                 setViewMode(false);
@@ -779,15 +721,17 @@ export default function Home() {
             </button>
           </div>
           {/* Background Music Audio Element */}
-          <audio
-            id="background-music"
-            src="/music/christmas.mp3"
-            loop
-            onError={(e) => {
-              console.error("Error loading music:", e);
-              setIsPlaying(false);
-            }}
-          />
+          {getMusicUrl() && (
+            <audio
+              id="background-music"
+              src={getMusicUrl() || undefined}
+              loop
+              onError={(e) => {
+                console.error("Error loading music:", e);
+                setIsPlaying(false);
+              }}
+            />
+          )}
         </>
       )}
 

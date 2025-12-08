@@ -292,7 +292,21 @@ export default function Home() {
 
     setBackground(savedTheme);
     setViewMode(true);
-    setIsPlaying(false); // Don't auto-play, let user click the Play button
+    setIsPlaying(true);
+
+    // Auto-play music after a longer delay to ensure state updates and audio element is ready
+    setTimeout(() => {
+      const audio = document.getElementById(
+        "background-music"
+      ) as HTMLAudioElement;
+      if (audio) {
+        audio.volume = 1.0;
+        audio.play().catch((err) => {
+          console.error("Auto-play failed:", err);
+          setIsPlaying(false);
+        });
+      }
+    }, 300);
   };
 
   const handleMusicUpload = async (file: File) => {
@@ -699,9 +713,7 @@ export default function Home() {
                   } else {
                     audio.play().catch((err) => {
                       console.error("Play failed:", err);
-                      alert(
-                        "Could not play audio. Browser may be blocking autoplay."
-                      );
+                      alert("Could not play audio. Browser may be blocking autoplay.");
                     });
                     setIsPlaying(true);
                   }

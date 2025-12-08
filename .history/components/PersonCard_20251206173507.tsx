@@ -9,7 +9,6 @@ interface PersonCardProps {
   onEdit: (card: BirthdayCard) => void;
   onDelete: (id: string) => void;
   viewMode?: boolean;
-  background?: "birthday" | "christmas" | "neutral";
 }
 
 export default function PersonCard({
@@ -17,7 +16,6 @@ export default function PersonCard({
   onEdit,
   onDelete,
   viewMode = false,
-  background = "neutral",
 }: PersonCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -30,16 +28,7 @@ export default function PersonCard({
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
-    const handleEnded = () => {
-      setIsPlaying(false);
-      // Restore background music volume when card audio ends
-      const backgroundMusic = document.getElementById(
-        "background-music"
-      ) as HTMLAudioElement;
-      if (backgroundMusic) {
-        backgroundMusic.volume = 1.0;
-      }
-    };
+    const handleEnded = () => setIsPlaying(false);
 
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("loadedmetadata", updateDuration);
@@ -54,22 +43,10 @@ export default function PersonCard({
 
   const toggleAudio = () => {
     if (audioRef.current) {
-      const backgroundMusic = document.getElementById(
-        "background-music"
-      ) as HTMLAudioElement;
-
       if (isPlaying) {
         audioRef.current.pause();
-        // Restore background music volume
-        if (backgroundMusic) {
-          backgroundMusic.volume = 1.0;
-        }
       } else {
         audioRef.current.play();
-        // Reduce background music volume to 50%
-        if (backgroundMusic) {
-          backgroundMusic.volume = 0.5;
-        }
       }
       setIsPlaying(!isPlaying);
     }
@@ -111,23 +88,20 @@ export default function PersonCard({
 
   return (
     <div
-      className="flex flex-col justify-center items-center transition-all hover:translate-y-[-4px]"
+      className="flex flex-col justify-center items-center"
       style={{
-        width: "360px",
-        height: "360px",
-        minWidth: "360px",
-        maxWidth: "360px",
-        border: "3px solid rgba(0, 0, 0, 0.15)",
+        width: "450px",
+        height: "400px",
+        minWidth: "400px",
+        maxWidth: "400px",
+        border: "2px solid black",
         backgroundColor: "#fefdf3",
-        borderRadius: "24px",
-        boxShadow:
-          "0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)",
-        position: "relative",
-        overflow: "visible",
+        borderRadius: "20px",
+        boxShadow: "5px 10px",
       }}
     >
       {/* Circular image */}
-      <div className="relative" style={{ width: "172px", height: "172px" }}>
+      <div className="relative" style={{ width: "250px", height: "250px" }}>
         {card.image_url && (
           <Image
             src={card.image_url}
@@ -139,7 +113,7 @@ export default function PersonCard({
         )}
       </div>
 
-      <h3 className="text-lg font-bold text-gray-800 my-2">{card.name}</h3>
+      <h3 className="text-2xl font-bold text-gray-800 my-4">{card.name}</h3>
 
       {/* Audio Player */}
       <div className="flex items-center gap-3">
@@ -147,24 +121,10 @@ export default function PersonCard({
 
         <button
           onClick={toggleAudio}
-          className="flex items-center justify-center w-9 h-9 rounded-full transition-all hover:scale-105 active:scale-95"
-          style={{
-            background:
-              background === "christmas"
-                ? "linear-gradient(135deg, #f16844 0%, #ff8a6b 100%)"
-                : "linear-gradient(135deg, #fab240 0%, #ffd575 100%)",
-            boxShadow: `0 4px 12px rgba(${
-              background === "christmas" ? "241, 104, 68" : "250, 178, 64"
-            }, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.4)`,
-            border: "2px solid white",
-          }}
+          className="flex items-center justify-center w-12 h-12 text-gray-800 hover:scale-95 active:scale-90 transition-transform"
         >
           {isPlaying ? (
-            <svg
-              className="w-5 h-5 text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
+            <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
@@ -172,11 +132,7 @@ export default function PersonCard({
               />
             </svg>
           ) : (
-            <svg
-              className="w-5 h-5 text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
+            <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
@@ -191,61 +147,33 @@ export default function PersonCard({
           onClick={handleTimelineClick}
           className="relative rounded-full cursor-pointer"
           style={{
-            backgroundColor: "rgba(255, 255, 255, 0.3)",
-            border: `2px solid ${
-              background === "christmas" ? "#f16844" : "#fab240"
-            }`,
-            width: "172px",
+            backgroundColor: "white",
+            border: "1px solid #fab240",
+            width: "250px",
             height: "12px",
-            boxShadow: `0 2px 8px rgba(${
-              background === "christmas" ? "241, 104, 68" : "250, 178, 64"
-            }, 0.25)`,
           }}
         >
           <div
-            className="rounded-full h-full transition-all pointer-events-none relative"
+            className="rounded-full h-full transition-all pointer-events-none"
             style={{
-              background:
-                background === "christmas"
-                  ? "linear-gradient(90deg, #f16844 0%, #ff8a6b 100%)"
-                  : "linear-gradient(90deg, #fab240 0%, #ffd575 100%)",
+              backgroundColor: "#fab240",
               width: `${(currentTime / duration) * 100}%`,
-              boxShadow: `inset 0 1px 2px rgba(255, 255, 255, 0.4)`,
             }}
-          >
-            {/* Progress indicator dot */}
-            {currentTime > 0 && currentTime < duration && (
-              <div
-                className="absolute right-0 top-1/2 -translate-y-1/2"
-                style={{
-                  width: "16px",
-                  height: "16px",
-                  backgroundColor:
-                    background === "christmas" ? "#f16844" : "#fab240",
-                  borderRadius: "50%",
-                  boxShadow: `0 2px 6px rgba(${
-                    background === "christmas" ? "241, 104, 68" : "250, 178, 64"
-                  }, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.5)`,
-                  border: "2px solid white",
-                  transform: "translateX(50%) translateY(-50%)",
-                }}
-              />
-            )}
-          </div>
+          />
         </div>
       </div>
 
       {!viewMode && (
-        <div className="flex gap-2 mt-3">
+        <div className="flex gap-2 mt-4">
           <button
             onClick={() => onEdit(card)}
-            className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
           >
             Edit
           </button>
           <button
             onClick={() => onDelete(card.id)}
-            className="px-3 py-1.5 text-sm bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium"
+            className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium"
           >
             Delete
           </button>

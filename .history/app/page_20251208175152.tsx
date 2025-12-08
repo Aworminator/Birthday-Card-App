@@ -20,7 +20,6 @@ export default function Home() {
   >("neutral");
   const [customMusicUrl, setCustomMusicUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [useDefaultMusic, setUseDefaultMusic] = useState(false);
 
   useEffect(() => {
     fetchCards();
@@ -276,23 +275,29 @@ export default function Home() {
     } else {
       localStorage.removeItem("customMusicUrl");
     }
-    localStorage.setItem("useDefaultMusic", useDefaultMusic.toString());
   };
 
   const handleEnterViewMode = () => {
-    // Load saved custom music and default music preference BEFORE entering view mode
+    setBackground(savedTheme);
+    setViewMode(true);
+    setIsPlaying(true);
+    // Load saved custom music
     const savedMusic = localStorage.getItem("customMusicUrl");
     if (savedMusic) {
       setCustomMusicUrl(savedMusic);
     }
-    const savedUseDefault = localStorage.getItem("useDefaultMusic");
-    if (savedUseDefault === "true") {
-      setUseDefaultMusic(true);
-    }
-
-    setBackground(savedTheme);
-    setViewMode(true);
-    setIsPlaying(false); // Don't auto-play, let user click the Play button
+    // Auto-play music after a short delay to ensure audio element is ready
+    setTimeout(() => {
+      const audio = document.getElementById(
+        "background-music"
+      ) as HTMLAudioElement;
+      if (audio) {
+        audio.play().catch((err) => {
+          console.error("Auto-play failed:", err);
+          setIsPlaying(false);
+        });
+      }
+    }, 100);
   };
 
   const handleMusicUpload = async (file: File) => {
@@ -338,9 +343,7 @@ export default function Home() {
   };
 
   const getMusicUrl = () => {
-    if (customMusicUrl) return customMusicUrl;
-    if (useDefaultMusic) return getDefaultMusicUrl();
-    return null;
+    return customMusicUrl || getDefaultMusicUrl();
   };
 
   const getBackgroundClass = () => {
@@ -592,42 +595,22 @@ export default function Home() {
                 )}
               </div>
               <button
-                onClick={() => setUseDefaultMusic(!useDefaultMusic)}
-                className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all shadow-md hover:shadow-lg font-semibold ${
-                  useDefaultMusic
-                    ? "bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white"
-                    : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                }`}
+                onClick={() => setCustomMusicUrl(null)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl hover:from-purple-600 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg font-semibold"
               >
-                {useDefaultMusic ? (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                )}
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
                 Use Default Music
               </button>
               {customMusicUrl && (
@@ -685,72 +668,7 @@ export default function Home() {
       {/* Exit View Mode button */}
       {viewMode && (
         <>
-          <div className="fixed top-4 right-4 z-50 flex gap-3">
-            {/* Play/Pause Music Button */}
-            <button
-              onClick={() => {
-                const audio = document.getElementById(
-                  "background-music"
-                ) as HTMLAudioElement;
-                if (audio) {
-                  if (isPlaying) {
-                    audio.pause();
-                    setIsPlaying(false);
-                  } else {
-                    audio.play().catch((err) => {
-                      console.error("Play failed:", err);
-                      alert(
-                        "Could not play audio. Browser may be blocking autoplay."
-                      );
-                    });
-                    setIsPlaying(true);
-                  }
-                }
-              }}
-              className="flex items-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all shadow-lg font-semibold"
-            >
-              {isPlaying ? (
-                <>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Pause
-                </>
-              ) : (
-                <>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Play
-                </>
-              )}
-            </button>
+          <div className="fixed top-4 right-4 z-50">
             <button
               onClick={() => {
                 setViewMode(false);
@@ -779,15 +697,18 @@ export default function Home() {
             </button>
           </div>
           {/* Background Music Audio Element */}
-          <audio
-            id="background-music"
-            src="/music/christmas.mp3"
-            loop
-            onError={(e) => {
-              console.error("Error loading music:", e);
-              setIsPlaying(false);
-            }}
-          />
+          {getMusicUrl() && (
+            <audio
+              id="background-music"
+              src={getMusicUrl() || undefined}
+              loop
+              autoPlay
+              onError={(e) => {
+                console.error("Error loading music:", e);
+                setIsPlaying(false);
+              }}
+            />
+          )}
         </>
       )}
 

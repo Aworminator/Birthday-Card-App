@@ -8,7 +8,6 @@ interface CardGridProps {
   onEdit: (card: BirthdayCard) => void;
   onDelete: (id: string) => void;
   viewMode?: boolean;
-  background?: "birthday" | "christmas" | "neutral";
 }
 
 export default function CardGrid({
@@ -16,7 +15,6 @@ export default function CardGrid({
   onEdit,
   onDelete,
   viewMode = false,
-  background = "neutral",
 }: CardGridProps) {
   if (cards.length === 0) {
     return (
@@ -29,17 +27,15 @@ export default function CardGrid({
   }
 
   return (
-    <div className="flex flex-wrap gap-8" style={{ width: "100%" }}>
+    <div className="flex flex-wrap gap-6">
       {cards.map((card) => (
-        <div key={card.id} style={{ width: "350px", height: "350px" }}>
-          <PersonCard
-            card={card}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            viewMode={viewMode}
-            background={background}
-          />
-        </div>
+        <PersonCard
+          key={card.id}
+          card={card}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          viewMode={viewMode}
+        />
       ))}
     </div>
   );

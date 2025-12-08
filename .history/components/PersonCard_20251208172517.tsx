@@ -30,16 +30,7 @@ export default function PersonCard({
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
-    const handleEnded = () => {
-      setIsPlaying(false);
-      // Restore background music volume when card audio ends
-      const backgroundMusic = document.getElementById(
-        "background-music"
-      ) as HTMLAudioElement;
-      if (backgroundMusic) {
-        backgroundMusic.volume = 1.0;
-      }
-    };
+    const handleEnded = () => setIsPlaying(false);
 
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("loadedmetadata", updateDuration);
@@ -54,22 +45,10 @@ export default function PersonCard({
 
   const toggleAudio = () => {
     if (audioRef.current) {
-      const backgroundMusic = document.getElementById(
-        "background-music"
-      ) as HTMLAudioElement;
-
       if (isPlaying) {
         audioRef.current.pause();
-        // Restore background music volume
-        if (backgroundMusic) {
-          backgroundMusic.volume = 1.0;
-        }
       } else {
         audioRef.current.play();
-        // Reduce background music volume to 50%
-        if (backgroundMusic) {
-          backgroundMusic.volume = 0.5;
-        }
       }
       setIsPlaying(!isPlaying);
     }
@@ -111,19 +90,16 @@ export default function PersonCard({
 
   return (
     <div
-      className="flex flex-col justify-center items-center transition-all hover:translate-y-[-4px]"
+      className="flex flex-col justify-center items-center"
       style={{
         width: "360px",
         height: "360px",
         minWidth: "360px",
         maxWidth: "360px",
-        border: "3px solid rgba(0, 0, 0, 0.15)",
+        border: "2px solid black",
         backgroundColor: "#fefdf3",
-        borderRadius: "24px",
-        boxShadow:
-          "0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)",
-        position: "relative",
-        overflow: "visible",
+        borderRadius: "20px",
+        boxShadow: "5px 10px",
       }}
     >
       {/* Circular image */}
@@ -147,7 +123,7 @@ export default function PersonCard({
 
         <button
           onClick={toggleAudio}
-          className="flex items-center justify-center w-9 h-9 rounded-full transition-all hover:scale-105 active:scale-95"
+          className="flex items-center justify-center w-12 h-12 rounded-full transition-all hover:scale-105 active:scale-95"
           style={{
             background:
               background === "christmas"
@@ -160,11 +136,7 @@ export default function PersonCard({
           }}
         >
           {isPlaying ? (
-            <svg
-              className="w-5 h-5 text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
+            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
@@ -172,11 +144,7 @@ export default function PersonCard({
               />
             </svg>
           ) : (
-            <svg
-              className="w-5 h-5 text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
+            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"

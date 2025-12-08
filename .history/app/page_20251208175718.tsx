@@ -292,7 +292,21 @@ export default function Home() {
 
     setBackground(savedTheme);
     setViewMode(true);
-    setIsPlaying(false); // Don't auto-play, let user click the Play button
+    setIsPlaying(true);
+
+    // Auto-play music after a longer delay to ensure state updates and audio element is ready
+    setTimeout(() => {
+      const audio = document.getElementById(
+        "background-music"
+      ) as HTMLAudioElement;
+      if (audio) {
+        audio.volume = 1.0;
+        audio.play().catch((err) => {
+          console.error("Auto-play failed:", err);
+          setIsPlaying(false);
+        });
+      }
+    }, 300);
   };
 
   const handleMusicUpload = async (file: File) => {
@@ -685,72 +699,7 @@ export default function Home() {
       {/* Exit View Mode button */}
       {viewMode && (
         <>
-          <div className="fixed top-4 right-4 z-50 flex gap-3">
-            {/* Play/Pause Music Button */}
-            <button
-              onClick={() => {
-                const audio = document.getElementById(
-                  "background-music"
-                ) as HTMLAudioElement;
-                if (audio) {
-                  if (isPlaying) {
-                    audio.pause();
-                    setIsPlaying(false);
-                  } else {
-                    audio.play().catch((err) => {
-                      console.error("Play failed:", err);
-                      alert(
-                        "Could not play audio. Browser may be blocking autoplay."
-                      );
-                    });
-                    setIsPlaying(true);
-                  }
-                }
-              }}
-              className="flex items-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all shadow-lg font-semibold"
-            >
-              {isPlaying ? (
-                <>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Pause
-                </>
-              ) : (
-                <>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Play
-                </>
-              )}
-            </button>
+          <div className="fixed top-4 right-4 z-50">
             <button
               onClick={() => {
                 setViewMode(false);
@@ -779,15 +728,18 @@ export default function Home() {
             </button>
           </div>
           {/* Background Music Audio Element */}
-          <audio
-            id="background-music"
-            src="/music/christmas.mp3"
-            loop
-            onError={(e) => {
-              console.error("Error loading music:", e);
-              setIsPlaying(false);
-            }}
-          />
+          {getMusicUrl() && (
+            <audio
+              id="background-music"
+              src={getMusicUrl() || undefined}
+              loop
+              autoPlay
+              onError={(e) => {
+                console.error("Error loading music:", e);
+                setIsPlaying(false);
+              }}
+            />
+          )}
         </>
       )}
 

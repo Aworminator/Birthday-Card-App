@@ -30,16 +30,7 @@ export default function PersonCard({
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
-    const handleEnded = () => {
-      setIsPlaying(false);
-      // Restore background music volume when card audio ends
-      const backgroundMusic = document.getElementById(
-        "background-music"
-      ) as HTMLAudioElement;
-      if (backgroundMusic) {
-        backgroundMusic.volume = 1.0;
-      }
-    };
+    const handleEnded = () => setIsPlaying(false);
 
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("loadedmetadata", updateDuration);
