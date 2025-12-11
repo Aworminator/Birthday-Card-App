@@ -98,7 +98,7 @@ export default function PersonCard({
             "background-music"
           ) as HTMLAudioElement;
           if (backgroundMusic) {
-            fadeVolume(backgroundMusic, 0.3, 500);
+            fadeVolume(backgroundMusic, 0.4, 500);
           }
         }
       }, 500);

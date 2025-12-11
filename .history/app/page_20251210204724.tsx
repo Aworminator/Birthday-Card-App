@@ -1046,7 +1046,7 @@ export default function Home() {
             <p className="text-gray-600 mb-6 text-center">
               Share the link below with your friends and family:
             </p>
-
+            
             <div className="mb-6">
               <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border-2 border-gray-200">
                 <input

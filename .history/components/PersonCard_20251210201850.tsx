@@ -62,7 +62,7 @@ export default function PersonCard({
           }
         }, stepDuration);
       }
-
+      
       // Notify parent that this card has ended
       if (automaticMode && onCardEnded) {
         onCardEnded(card.id);
@@ -84,7 +84,7 @@ export default function PersonCard({
   useEffect(() => {
     if (shouldAutoPlay && !hasAutoPlayed.current && audioRef.current) {
       hasAutoPlayed.current = true;
-
+      
       // Small delay to ensure smooth transition
       setTimeout(() => {
         if (audioRef.current) {
@@ -92,13 +92,13 @@ export default function PersonCard({
             console.error("Auto-play failed:", err);
           });
           setIsPlaying(true);
-
+          
           // Reduce background music volume
           const backgroundMusic = document.getElementById(
             "background-music"
           ) as HTMLAudioElement;
           if (backgroundMusic) {
-            fadeVolume(backgroundMusic, 0.3, 500);
+            fadeVolume(backgroundMusic, 0.4, 500);
           }
         }
       }, 500);

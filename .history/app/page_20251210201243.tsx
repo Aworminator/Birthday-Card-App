@@ -21,10 +21,6 @@ export default function Home() {
   const [customMusicUrl, setCustomMusicUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [useDefaultMusic, setUseDefaultMusic] = useState(false);
-  const [automaticMode, setAutomaticMode] = useState(false);
-  const [headerText, setHeaderText] = useState("");
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
-  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     fetchCards();
@@ -281,8 +277,6 @@ export default function Home() {
       localStorage.removeItem("customMusicUrl");
     }
     localStorage.setItem("useDefaultMusic", useDefaultMusic.toString());
-    localStorage.setItem("automaticMode", automaticMode.toString());
-    localStorage.setItem("headerText", headerText);
   };
 
   const handleEnterViewMode = () => {
@@ -295,33 +289,10 @@ export default function Home() {
     if (savedUseDefault === "true") {
       setUseDefaultMusic(true);
     }
-    const savedAutoMode = localStorage.getItem("automaticMode");
-    const isAutoMode = savedAutoMode === "true";
-    setAutomaticMode(isAutoMode);
-    const savedHeader = localStorage.getItem("headerText");
-    if (savedHeader) {
-      setHeaderText(savedHeader);
-    }
 
     setBackground(savedTheme);
     setViewMode(true);
-
-    // In automatic mode, start playing music automatically
-    if (isAutoMode) {
-      setIsPlaying(true);
-      setTimeout(() => {
-        const audio = document.getElementById(
-          "background-music"
-        ) as HTMLAudioElement;
-        if (audio) {
-          audio.play().catch((err) => {
-            console.error("Auto-play failed:", err);
-          });
-        }
-      }, 100);
-    } else {
-      setIsPlaying(false); // Don't auto-play, let user click the Play button
-    }
+    setIsPlaying(false); // Don't auto-play, let user click the Play button
   };
 
   const handleMusicUpload = async (file: File) => {
@@ -350,42 +321,6 @@ export default function Home() {
     } catch (error) {
       console.error("Error uploading music:", error);
       alert("Failed to upload music. Please try again.");
-    }
-  };
-
-  const generateShareLink = async () => {
-    try {
-      const { nanoid } = await import("nanoid");
-      const shareId = nanoid(10);
-
-      // Save share session to database
-      const { error } = await supabase.from("share_sessions").insert({
-        share_id: shareId,
-        theme: savedTheme,
-        header_text: headerText,
-        custom_music_url: customMusicUrl,
-        use_default_music: useDefaultMusic,
-        automatic_mode: automaticMode,
-      });
-
-      if (error) {
-        console.error("Error creating share session:", error);
-        throw error;
-      }
-
-      const url = `${window.location.origin}/share/${shareId}`;
-      setShareUrl(url);
-      setShowShareModal(true);
-    } catch (error) {
-      console.error("Error generating share link:", error);
-      alert("Failed to generate share link. Please try again.");
-    }
-  };
-
-  const copyShareLink = () => {
-    if (shareUrl) {
-      navigator.clipboard.writeText(shareUrl);
-      alert("Link copied to clipboard!");
     }
   };
 
@@ -576,27 +511,11 @@ export default function Home() {
               <div className="relative">
                 <select
                   value={background}
-                  onChange={(e) => {
-                    const newTheme = e.target.value as
-                      | "birthday"
-                      | "christmas"
-                      | "neutral";
-                    setBackground(newTheme);
-                    // Set default header text based on theme if current header is empty or matches old default
-                    if (
-                      !headerText ||
-                      headerText === "Merry Christmas" ||
-                      headerText.startsWith("Happy Birthday")
-                    ) {
-                      if (newTheme === "christmas") {
-                        setHeaderText("Merry Christmas");
-                      } else if (newTheme === "birthday") {
-                        setHeaderText("Happy Birthday");
-                      } else {
-                        setHeaderText("");
-                      }
-                    }
-                  }}
+                  onChange={(e) =>
+                    setBackground(
+                      e.target.value as "birthday" | "christmas" | "neutral"
+                    )
+                  }
                   className="w-full appearance-none px-4 py-3 pr-10 bg-white border-2 border-gray-200 text-gray-700 rounded-xl hover:border-gray-300 transition-all shadow-md hover:shadow-lg font-semibold cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="neutral">Neutral Background</option>
@@ -618,29 +537,6 @@ export default function Home() {
                 </svg>
               </div>
             </div>
-
-            {/* Header Text Input */}
-            {(background === "birthday" || background === "christmas") && (
-              <div className="mb-8">
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Header Text{" "}
-                  {background === "birthday"
-                    ? "(e.g., Happy Birthday John)"
-                    : "(e.g., Merry Christmas Family)"}
-                </label>
-                <input
-                  type="text"
-                  value={headerText}
-                  onChange={(e) => setHeaderText(e.target.value)}
-                  placeholder={
-                    background === "christmas"
-                      ? "Merry Christmas"
-                      : "Happy Birthday"
-                  }
-                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-xl hover:border-gray-300 transition-all shadow-md hover:shadow-lg font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
-            )}
 
             {/* Music Upload */}
             <div className="mb-8">
@@ -741,57 +637,6 @@ export default function Home() {
               )}
             </div>
 
-            {/* Automatic Mode */}
-            <div className="mb-8">
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Playback Mode
-              </label>
-              <button
-                onClick={() => setAutomaticMode(!automaticMode)}
-                className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all shadow-md hover:shadow-lg font-semibold ${
-                  automaticMode
-                    ? "bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white"
-                    : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                }`}
-              >
-                {automaticMode ? (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                )}
-                Automatic Mode (Suggested for elderly)
-              </button>
-              <p className="text-xs text-gray-500 mt-2">
-                {automaticMode
-                  ? "Music and cards will play automatically in sequence"
-                  : "Manual controls for music and card playback"}
-              </p>
-            </div>
-
             {/* Action Buttons */}
             <div className="flex gap-3">
               <button
@@ -836,34 +681,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
-      {/* Header Text Display */}
-      {viewMode &&
-        headerText &&
-        (background === "birthday" || background === "christmas") && (
-          <div className="relative z-40 px-8 pt-16 pb-8">
-            <h1
-              className={
-                background === "birthday"
-                  ? "text-7xl font-bold text-center text-pink-600"
-                  : "text-7xl font-bold text-center text-red-700"
-              }
-              style={{
-                fontFamily:
-                  background === "birthday" ? '"Lobster", sans-serif' : "serif",
-                fontWeight: background === "birthday" ? 500 : 700,
-                fontSize: "5rem",
-                textShadow:
-                  background === "christmas"
-                    ? "3px 3px 6px rgba(0,0,0,0.4), 1px 1px 2px rgba(0,0,0,0.6), 0 0 20px rgba(255,255,255,0.3)"
-                    : "3px 3px 6px rgba(0,0,0,0.3), 1px 1px 2px rgba(255,105,180,0.4), 0 0 20px rgba(255,255,255,0.5)",
-                letterSpacing: "0.03em",
-              }}
-            >
-              {headerText}
-            </h1>
-          </div>
-        )}
 
       {/* Exit View Mode button */}
       {viewMode && (
@@ -935,25 +752,6 @@ export default function Home() {
               )}
             </button>
             <button
-              onClick={generateShareLink}
-              className="flex items-center gap-2 px-4 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all shadow-lg font-semibold"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                />
-              </svg>
-              Share
-            </button>
-            <button
               onClick={() => {
                 setViewMode(false);
                 setIsPlaying(false);
@@ -1023,7 +821,6 @@ export default function Home() {
             onDelete={handleDelete}
             viewMode={viewMode || themeMode}
             background={background}
-            automaticMode={automaticMode && viewMode}
           />
         )}
       </div>
@@ -1035,57 +832,6 @@ export default function Home() {
         onSave={handleSave}
         editCard={editingCard}
       />
-
-      {/* Share Modal */}
-      {showShareModal && shareUrl && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">
-              🎉 Your card is ready!
-            </h2>
-            <p className="text-gray-600 mb-6 text-center">
-              Share the link below with your friends and family:
-            </p>
-
-            <div className="mb-6">
-              <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border-2 border-gray-200">
-                <input
-                  type="text"
-                  value={shareUrl}
-                  readOnly
-                  className="flex-1 bg-transparent text-gray-700 text-sm font-mono outline-none"
-                />
-                <button
-                  onClick={copyShareLink}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all font-semibold flex items-center gap-2"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    />
-                  </svg>
-                  Copy
-                </button>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowShareModal(false)}
-              className="w-full px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md hover:shadow-lg font-semibold"
-            >
-              Done
-            </button>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

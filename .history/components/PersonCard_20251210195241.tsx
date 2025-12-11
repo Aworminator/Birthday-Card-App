@@ -10,9 +10,6 @@ interface PersonCardProps {
   onDelete: (id: string) => void;
   viewMode?: boolean;
   background?: "birthday" | "christmas" | "neutral";
-  automaticMode?: boolean;
-  shouldAutoPlay?: boolean;
-  onCardEnded?: (cardId: string) => void;
 }
 
 export default function PersonCard({
@@ -21,15 +18,11 @@ export default function PersonCard({
   onDelete,
   viewMode = false,
   background = "neutral",
-  automaticMode = false,
-  shouldAutoPlay = false,
-  onCardEnded,
 }: PersonCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const hasAutoPlayed = useRef(false);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -62,11 +55,6 @@ export default function PersonCard({
           }
         }, stepDuration);
       }
-
-      // Notify parent that this card has ended
-      if (automaticMode && onCardEnded) {
-        onCardEnded(card.id);
-      }
     };
 
     audio.addEventListener("timeupdate", updateTime);
@@ -78,35 +66,7 @@ export default function PersonCard({
       audio.removeEventListener("loadedmetadata", updateDuration);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [automaticMode, onCardEnded, card.id]);
-
-  // Auto-play effect when shouldAutoPlay becomes true
-  useEffect(() => {
-    if (shouldAutoPlay && !hasAutoPlayed.current && audioRef.current) {
-      hasAutoPlayed.current = true;
-
-      // Small delay to ensure smooth transition
-      setTimeout(() => {
-        if (audioRef.current) {
-          audioRef.current.play().catch((err) => {
-            console.error("Auto-play failed:", err);
-          });
-          setIsPlaying(true);
-
-          // Reduce background music volume
-          const backgroundMusic = document.getElementById(
-            "background-music"
-          ) as HTMLAudioElement;
-          if (backgroundMusic) {
-            fadeVolume(backgroundMusic, 0.3, 500);
-          }
-        }
-      }, 500);
-    } else if (!shouldAutoPlay && hasAutoPlayed.current) {
-      // Reset the flag when card is no longer supposed to auto-play
-      hasAutoPlayed.current = false;
-    }
-  }, [shouldAutoPlay]);
+  }, []);
 
   const fadeVolume = (
     audio: HTMLAudioElement,
