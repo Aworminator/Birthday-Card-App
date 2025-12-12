@@ -44,34 +44,22 @@ export default function SharePage() {
 
       const createSnowflake = () => {
         const snowflake = document.createElement("div");
-        snowflake.className = "snowflake";
+        snowflake.classList.add("snowflake");
         snowflake.textContent = "❄";
-        snowflake.style.position = "absolute";
-        snowflake.style.color = "white";
-        snowflake.style.userSelect = "none";
-        snowflake.style.pointerEvents = "none";
 
         const size = Math.random() * 1.5 + 0.8;
         snowflake.style.fontSize = `${size}rem`;
         snowflake.style.left = Math.random() * 100 + "vw";
-        snowflake.style.top = "-10vh";
         const duration = Math.random() * 5 + 5;
-        snowflake.style.animation = `fall ${duration}s linear ${
-          Math.random() * 5
-        }s infinite`;
-        snowflake.style.opacity = "0.8";
+        snowflake.style.animationDuration = `${duration}s`;
+        snowflake.style.animationDelay = Math.random() * 5 + "s";
 
         snowContainer.appendChild(snowflake);
 
         setTimeout(() => {
           snowflake.remove();
-        }, (duration + 5) * 1000);
+        }, duration * 2000);
       };
-
-      // Create initial batch
-      for (let i = 0; i < 20; i++) {
-        setTimeout(createSnowflake, i * 150);
-      }
 
       const interval = setInterval(createSnowflake, 300);
       return () => {
@@ -91,23 +79,18 @@ export default function SharePage() {
 
       const createBalloon = () => {
         const balloon = document.createElement("div");
-        balloon.className = "balloon";
-        balloon.style.position = "absolute";
-        balloon.style.bottom = "-15vh";
-        balloon.style.borderRadius = "50% 50% 45% 45%";
-        balloon.style.border = "2px solid rgba(0, 0, 0, 0.4)";
-        balloon.style.boxShadow =
-          "inset -10px -20px 30px rgba(255, 255, 255, 0.4)";
-        balloon.style.pointerEvents = "none";
+        balloon.classList.add("balloon");
 
         const size = Math.random() * 40 + 40;
         balloon.style.width = `${size}px`;
-        balloon.style.height = `${size * 1.3}px`;
+        balloon.style.height = `${size}px`;
+        balloon.style.borderRadius = "50%";
         balloon.style.backgroundColor =
           colors[Math.floor(Math.random() * colors.length)];
         balloon.style.left = Math.random() * 100 + "vw";
         const duration = Math.random() * 6 + 6;
-        balloon.style.animation = `floatUp ${duration}s ease-in forwards`;
+        balloon.style.animationDuration = `${duration}s`;
+        balloon.style.animationTimingFunction = "ease-in-out";
 
         balloonContainer.appendChild(balloon);
 
@@ -115,11 +98,6 @@ export default function SharePage() {
           balloon.remove();
         }, duration * 1000);
       };
-
-      // Create initial batch
-      for (let i = 0; i < 10; i++) {
-        setTimeout(createBalloon, i * 400);
-      }
 
       const interval = setInterval(createBalloon, 900);
       return () => {

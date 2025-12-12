@@ -110,7 +110,7 @@ export default function WelcomePage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-gray-900"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
                 placeholder="you@example.com"
               />
             </div>
@@ -128,7 +128,7 @@ export default function WelcomePage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-gray-900"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
                 placeholder="••••••••"
               />
             </div>
@@ -137,7 +137,11 @@ export default function WelcomePage() {
               disabled={authLoading}
               className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-md hover:shadow-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {authLoading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+              {authLoading
+                ? "Loading..."
+                : isSignUp
+                  ? "Sign Up"
+                  : "Sign In"}
             </button>
           </form>
 

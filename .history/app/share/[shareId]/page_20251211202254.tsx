@@ -56,9 +56,7 @@ export default function SharePage() {
         snowflake.style.left = Math.random() * 100 + "vw";
         snowflake.style.top = "-10vh";
         const duration = Math.random() * 5 + 5;
-        snowflake.style.animation = `fall ${duration}s linear ${
-          Math.random() * 5
-        }s infinite`;
+        snowflake.style.animation = `fall ${duration}s linear ${Math.random() * 5}s infinite`;
         snowflake.style.opacity = "0.8";
 
         snowContainer.appendChild(snowflake);
@@ -96,8 +94,7 @@ export default function SharePage() {
         balloon.style.bottom = "-15vh";
         balloon.style.borderRadius = "50% 50% 45% 45%";
         balloon.style.border = "2px solid rgba(0, 0, 0, 0.4)";
-        balloon.style.boxShadow =
-          "inset -10px -20px 30px rgba(255, 255, 255, 0.4)";
+        balloon.style.boxShadow = "inset -10px -20px 30px rgba(255, 255, 255, 0.4)";
         balloon.style.pointerEvents = "none";
 
         const size = Math.random() * 40 + 40;
