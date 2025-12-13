@@ -608,25 +608,6 @@ export default function ProjectPage() {
                   Select Theme
                 </button>
                 <button
-                  onClick={generateInviteLink}
-                  className="flex items-center gap-2 px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all shadow-md hover:shadow-lg font-semibold"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                    />
-                  </svg>
-                  Invite Guest
-                </button>
-                <button
                   onClick={handleEnterViewMode}
                   className="flex items-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition-all shadow-md hover:shadow-lg font-semibold"
                 >
@@ -1070,25 +1051,6 @@ export default function ProjectPage() {
               Share
             </button>
             <button
-              onClick={generateInviteLink}
-              className="flex items-center gap-2 px-4 py-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition-all shadow-lg font-semibold"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                />
-              </svg>
-              Invite Guest
-            </button>
-            <button
               onClick={() => {
                 setViewMode(false);
                 setIsPlaying(false);
@@ -1218,77 +1180,6 @@ export default function ProjectPage() {
             >
               Done
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* Invite Modal */}
-      {showInviteModal && inviteUrl && inviteCode && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">
-              👥 Invite Guest to Add Card
-            </h2>
-            <p className="text-gray-600 mb-6 text-center">
-              Share this link and access code with someone to let them add a
-              card to your project:
-            </p>
-
-            <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Invite Link
-              </label>
-              <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border-2 border-gray-200">
-                <input
-                  type="text"
-                  value={inviteUrl}
-                  readOnly
-                  className="flex-1 bg-transparent text-gray-700 text-xs font-mono outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Access Code
-              </label>
-              <div className="p-4 bg-purple-50 rounded-lg border-2 border-purple-200 text-center">
-                <div className="text-4xl font-bold text-purple-600 tracking-widest">
-                  {inviteCode}
-                </div>
-              </div>
-              <p className="text-xs text-gray-500 mt-2 text-center">
-                This code is required to access the invite link
-              </p>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={copyInviteInfo}
-                className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all font-semibold flex items-center justify-center gap-2"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                  />
-                </svg>
-                Copy All
-              </button>
-              <button
-                onClick={() => setShowInviteModal(false)}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-600 hover:to-pink-700 transition-all font-semibold"
-              >
-                Done
-              </button>
-            </div>
           </div>
         </div>
       )}

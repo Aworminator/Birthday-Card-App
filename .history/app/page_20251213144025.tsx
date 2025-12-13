@@ -26,12 +26,7 @@ export default function WelcomePage() {
       hasNumber,
       hasSpecialChar,
       isLongEnough,
-      isValid:
-        hasUpperCase &&
-        hasLowerCase &&
-        hasNumber &&
-        hasSpecialChar &&
-        isLongEnough,
+      isValid: hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar && isLongEnough,
     };
   };
 

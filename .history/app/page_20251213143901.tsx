@@ -26,12 +26,7 @@ export default function WelcomePage() {
       hasNumber,
       hasSpecialChar,
       isLongEnough,
-      isValid:
-        hasUpperCase &&
-        hasLowerCase &&
-        hasNumber &&
-        hasSpecialChar &&
-        isLongEnough,
+      isValid: hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar && isLongEnough,
     };
   };
 
@@ -147,14 +142,7 @@ export default function WelcomePage() {
                 placeholder="you@example.com"
               />
             </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Password
-              </label>
-              <div className="relative">
+            <didiv className="relative">
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -259,7 +247,14 @@ export default function WelcomePage() {
                     character (!@#$%^&*)
                   </div>
                 </div>
-              )}
+              )}type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-gray-900"
+                placeholder="••••••••"
+              />
             </div>
             <button
               type="submit"

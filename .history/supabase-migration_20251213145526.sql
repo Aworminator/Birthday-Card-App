@@ -56,24 +56,6 @@ ALTER TABLE invite_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE birthday_cards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE share_sessions ENABLE ROW LEVEL SECURITY;
 
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Users can view their own projects" ON projects;
-DROP POLICY IF EXISTS "Users can insert their own projects" ON projects;
-DROP POLICY IF EXISTS "Users can update their own projects" ON projects;
-DROP POLICY IF EXISTS "Users can delete their own projects" ON projects;
-
-DROP POLICY IF EXISTS "Users can view their own cards" ON birthday_cards;
-DROP POLICY IF EXISTS "Users can insert their own cards" ON birthday_cards;
-DROP POLICY IF EXISTS "Users can update their own cards" ON birthday_cards;
-DROP POLICY IF EXISTS "Users can delete their own cards" ON birthday_cards;
-
-DROP POLICY IF EXISTS "Anyone can read share sessions" ON share_sessions;
-DROP POLICY IF EXISTS "Authenticated users can create share sessions for their projects" ON share_sessions;
-
-DROP POLICY IF EXISTS "Anyone can read invite sessions" ON invite_sessions;
-DROP POLICY IF EXISTS "Authenticated users can create invite sessions for their projects" ON invite_sessions;
-DROP POLICY IF EXISTS "Anyone can update invite session used status" ON invite_sessions;
-
 -- Projects policies
 CREATE POLICY "Users can view their own projects"
   ON projects FOR SELECT
@@ -120,8 +102,7 @@ CREATE POLICY "Authenticated users can create share sessions for their projects"
       SELECT 1 FROM projects
       WHERE projects.id = share_sessions.project_id
       AND projects.user_id = auth.uid()
-    )
-  );
+    
 
 -- Invite sessions policies
 CREATE POLICY "Anyone can read invite sessions"
@@ -141,4 +122,5 @@ CREATE POLICY "Authenticated users can create invite sessions for their projects
 CREATE POLICY "Anyone can update invite session used status"
   ON invite_sessions FOR UPDATE
   USING (true)
-  WITH CHECK (true);
+  WITH CHECK (true);)
+  );
