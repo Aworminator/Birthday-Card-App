@@ -102,38 +102,7 @@ export default function AudioUpload({
 
   const startRecording = async () => {
     try {
-      // iOS/Safari and modern browsers require HTTPS for microphone access
-      if (typeof window !== "undefined" && !window.isSecureContext) {
-        alert(
-          "Voice recording requires HTTPS. Please open the app via an https URL (e.g., using an ngrok/Cloudflare tunnel) to enable microphone access on mobile."
-        );
-        return;
-      }
-
-      // Check for browser support first
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert(
-          "Your browser does not support voice recording. Please use a modern browser or upload an audio file instead."
-        );
-        return;
-      }
-
-      // Check if getUserMedia is available
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert(
-          "Your browser does not support voice recording. Please use a modern browser or try uploading an audio file instead."
-        );
-        return;
-      }
-
-      // Request microphone access with explicit permissions
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
@@ -146,9 +115,7 @@ export default function AudioUpload({
 
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
-        const audioFile = new File([audioBlob], "voice-memo.webm", {
-          type: "audio/webm",
-        });
+        const audioFile = new File([audioBlob], "voice-memo.webm", { type: "audio/webm" });
         handleFileChange(audioFile);
         stream.getTracks().forEach((track) => track.stop());
       };
@@ -161,32 +128,9 @@ export default function AudioUpload({
       recordingIntervalRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error accessing microphone:", error);
-
-      // Provide more specific error messages
-      if (error?.name === "NotAllowedError") {
-        alert(
-          "Microphone permission denied. Please allow microphone access in your browser settings and try again."
-        );
-      } else if (error?.name === "NotFoundError") {
-        alert("No microphone found on your device.");
-      } else if (error?.name === "NotReadableError") {
-        alert(
-          "Microphone is in use by another application. Please close it and try again."
-        );
-      } else if (
-        error?.name === "NotSupportedError" ||
-        error?.name === "TypeError"
-      ) {
-        alert(
-          "Voice recording is not supported on this device or browser. Please use a modern browser like Chrome, Firefox, or Safari on iOS 14.5+, or upload an audio file instead."
-        );
-      } else {
-        alert(
-          "Unable to access microphone. Make sure you've granted permission and are using HTTPS."
-        );
-      }
+      alert("Unable to access microphone. Please check your permissions.");
     }
   };
 
@@ -250,9 +194,7 @@ export default function AudioUpload({
           <div className="flex items-center gap-4 justify-center">
             <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
             <span className="text-lg font-bold text-red-600">Recording...</span>
-            <span className="text-lg font-semibold text-red-500">
-              {formatRecordingTime(recordingTime)}
-            </span>
+            <span className="text-lg font-semibold text-red-500">{formatRecordingTime(recordingTime)}</span>
           </div>
           <button
             type="button"

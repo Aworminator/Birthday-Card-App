@@ -167,18 +167,6 @@ export default function ProjectPage() {
     }
   }, [viewMode, themeMode, background]);
 
-  useEffect(() => {
-    // Ensure background music volume is set to 1.0 when in view mode
-    if (viewMode) {
-      const audio = document.getElementById(
-        "background-music"
-      ) as HTMLAudioElement;
-      if (audio) {
-        audio.volume = 1.0;
-      }
-    }
-  }, [viewMode]);
-
   const fetchCards = async () => {
     setLoadError(null);
     try {
@@ -1201,14 +1189,9 @@ export default function ProjectPage() {
               id="background-music"
               src={getMusicUrl() || undefined}
               loop
-              crossOrigin="anonymous"
               onError={(e) => {
                 console.error("Error loading music:", e);
                 setIsPlaying(false);
-              }}
-              onCanPlayThrough={(e) => {
-                const audio = e.currentTarget as HTMLAudioElement;
-                audio.volume = 1.0;
               }}
             />
           )}

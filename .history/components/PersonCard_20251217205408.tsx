@@ -30,9 +30,6 @@ export default function PersonCard({
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const hasAutoPlayed = useRef(false);
-  const isIOS =
-    typeof navigator !== "undefined" &&
-    /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -47,11 +44,7 @@ export default function PersonCard({
         "background-music"
       ) as HTMLAudioElement;
       if (backgroundMusic) {
-        if (isIOS) {
-          backgroundMusic.play().catch(() => {});
-        } else {
-          fadeVolume(backgroundMusic, 1.0, 500);
-        }
+        fadeVolume(backgroundMusic, 1.0, 500);
       }
 
       // Notify parent that this card has ended
@@ -131,15 +124,8 @@ export default function PersonCard({
         audioRef.current.pause();
         // Restore background music volume with fade
         if (backgroundMusic) {
-          if (isIOS) {
-            backgroundMusic.play().catch(() => {});
-          } else {
-            backgroundMusic.volume = Math.max(
-              backgroundMusic.volume || 0.4,
-              0.4
-            );
-            fadeVolume(backgroundMusic, 1.0, 500);
-          }
+          backgroundMusic.volume = Math.max(backgroundMusic.volume || 0.4, 0.4);
+          fadeVolume(backgroundMusic, 1.0, 500);
         }
       } else {
         audioRef.current.play().catch((err) => {
@@ -147,12 +133,8 @@ export default function PersonCard({
         });
         // Reduce background music volume to 40% with fade
         if (backgroundMusic) {
-          if (isIOS) {
-            backgroundMusic.pause();
-          } else {
-            backgroundMusic.volume = backgroundMusic.volume || 1.0;
-            fadeVolume(backgroundMusic, 0.4, 500);
-          }
+          backgroundMusic.volume = backgroundMusic.volume || 1.0;
+          fadeVolume(backgroundMusic, 0.4, 500);
         }
       }
       setIsPlaying(!isPlaying);
@@ -192,12 +174,8 @@ export default function PersonCard({
         "background-music"
       ) as HTMLAudioElement;
       if (backgroundMusic) {
-        if (isIOS) {
-          backgroundMusic.pause();
-        } else {
-          backgroundMusic.volume = backgroundMusic.volume || 1.0;
-          fadeVolume(backgroundMusic, 0.4, 500);
-        }
+        backgroundMusic.volume = backgroundMusic.volume || 1.0;
+        fadeVolume(backgroundMusic, 0.4, 500);
       }
     }
   };

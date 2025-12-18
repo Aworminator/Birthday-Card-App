@@ -1201,14 +1201,9 @@ export default function ProjectPage() {
               id="background-music"
               src={getMusicUrl() || undefined}
               loop
-              crossOrigin="anonymous"
               onError={(e) => {
                 console.error("Error loading music:", e);
                 setIsPlaying(false);
-              }}
-              onCanPlayThrough={(e) => {
-                const audio = e.currentTarget as HTMLAudioElement;
-                audio.volume = 1.0;
               }}
             />
           )}

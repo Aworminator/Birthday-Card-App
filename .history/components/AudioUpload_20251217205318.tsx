@@ -102,27 +102,9 @@ export default function AudioUpload({
 
   const startRecording = async () => {
     try {
-      // iOS/Safari and modern browsers require HTTPS for microphone access
-      if (typeof window !== "undefined" && !window.isSecureContext) {
-        alert(
-          "Voice recording requires HTTPS. Please open the app via an https URL (e.g., using an ngrok/Cloudflare tunnel) to enable microphone access on mobile."
-        );
-        return;
-      }
-
-      // Check for browser support first
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert(
-          "Your browser does not support voice recording. Please use a modern browser or upload an audio file instead."
-        );
-        return;
-      }
-
       // Check if getUserMedia is available
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert(
-          "Your browser does not support voice recording. Please use a modern browser or try uploading an audio file instead."
-        );
+        alert("Your browser does not support voice recording. Please use a modern browser or try uploading an audio file instead.");
         return;
       }
 
@@ -175,13 +157,8 @@ export default function AudioUpload({
         alert(
           "Microphone is in use by another application. Please close it and try again."
         );
-      } else if (
-        error?.name === "NotSupportedError" ||
-        error?.name === "TypeError"
-      ) {
-        alert(
-          "Voice recording is not supported on this device or browser. Please use a modern browser like Chrome, Firefox, or Safari on iOS 14.5+, or upload an audio file instead."
-        );
+      } else if (error?.name === "NotSupportedError" || error?.name === "TypeError") {
+        alert("Voice recording is not supported on this device or browser. Please use a modern browser like Chrome, Firefox, or Safari on iOS 14.5+, or upload an audio file instead.");
       } else {
         alert(
           "Unable to access microphone. Make sure you've granted permission and are using HTTPS."

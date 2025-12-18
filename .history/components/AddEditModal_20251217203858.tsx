@@ -27,7 +27,6 @@ export default function AddEditModal({
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [requiresHttps, setRequiresHttps] = useState(false);
 
   useEffect(() => {
     if (editCard) {
@@ -40,12 +39,6 @@ export default function AddEditModal({
       setImagePreview(null);
     }
   }, [editCard, isOpen]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setRequiresHttps(!window.isSecureContext);
-    }
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,13 +137,6 @@ export default function AddEditModal({
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Voice Message
             </label>
-            {requiresHttps && (
-              <div className="mb-3 rounded-xl border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-                Recording requires HTTPS on mobile. Open this app via an HTTPS
-                URL (e.g., ngrok or Cloudflare Tunnel). Uploading an audio file
-                works without HTTPS.
-              </div>
-            )}
             <AudioUpload
               onAudioSelect={setAudioFile}
               existingAudioUrl={editCard?.audio_url}

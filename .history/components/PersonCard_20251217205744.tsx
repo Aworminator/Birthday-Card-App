@@ -31,8 +31,7 @@ export default function PersonCard({
   const audioRef = useRef<HTMLAudioElement>(null);
   const hasAutoPlayed = useRef(false);
   const isIOS =
-    typeof navigator !== "undefined" &&
-    /iPad|iPhone|iPod/.test(navigator.userAgent);
+    typeof navigator !== "undefined" && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -47,11 +46,7 @@ export default function PersonCard({
         "background-music"
       ) as HTMLAudioElement;
       if (backgroundMusic) {
-        if (isIOS) {
-          backgroundMusic.play().catch(() => {});
-        } else {
-          fadeVolume(backgroundMusic, 1.0, 500);
-        }
+        fadeVolume(backgroundMusic, 1.0, 500);
       }
 
       // Notify parent that this card has ended
@@ -134,10 +129,7 @@ export default function PersonCard({
           if (isIOS) {
             backgroundMusic.play().catch(() => {});
           } else {
-            backgroundMusic.volume = Math.max(
-              backgroundMusic.volume || 0.4,
-              0.4
-            );
+            backgroundMusic.volume = Math.max(backgroundMusic.volume || 0.4, 0.4);
             fadeVolume(backgroundMusic, 1.0, 500);
           }
         }

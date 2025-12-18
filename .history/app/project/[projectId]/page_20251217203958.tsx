@@ -167,18 +167,6 @@ export default function ProjectPage() {
     }
   }, [viewMode, themeMode, background]);
 
-  useEffect(() => {
-    // Ensure background music volume is set to 1.0 when in view mode
-    if (viewMode) {
-      const audio = document.getElementById(
-        "background-music"
-      ) as HTMLAudioElement;
-      if (audio) {
-        audio.volume = 1.0;
-      }
-    }
-  }, [viewMode]);
-
   const fetchCards = async () => {
     setLoadError(null);
     try {
@@ -361,16 +349,6 @@ export default function ProjectPage() {
     // Use project data already loaded
     setBackground(savedTheme);
     setViewMode(true);
-
-    // Initialize background music volume to 1.0
-    setTimeout(() => {
-      const audio = document.getElementById(
-        "background-music"
-      ) as HTMLAudioElement;
-      if (audio) {
-        audio.volume = 1.0;
-      }
-    }, 50);
 
     // In automatic mode, start playing music automatically
     if (automaticMode) {
@@ -1171,10 +1149,7 @@ export default function ProjectPage() {
                 const audio = document.getElementById(
                   "background-music"
                 ) as HTMLAudioElement;
-                if (audio) {
-                  audio.pause();
-                  audio.volume = 1.0;
-                }
+                if (audio) audio.pause();
               }}
               className="flex items-center gap-1 md:gap-2 px-2 md:px-6 py-2 md:py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all shadow-lg font-semibold text-xs md:text-base"
             >
@@ -1201,14 +1176,9 @@ export default function ProjectPage() {
               id="background-music"
               src={getMusicUrl() || undefined}
               loop
-              crossOrigin="anonymous"
               onError={(e) => {
                 console.error("Error loading music:", e);
                 setIsPlaying(false);
-              }}
-              onCanPlayThrough={(e) => {
-                const audio = e.currentTarget as HTMLAudioElement;
-                audio.volume = 1.0;
               }}
             />
           )}

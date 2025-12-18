@@ -102,22 +102,6 @@ export default function AudioUpload({
 
   const startRecording = async () => {
     try {
-      // iOS/Safari and modern browsers require HTTPS for microphone access
-      if (typeof window !== "undefined" && !window.isSecureContext) {
-        alert(
-          "Voice recording requires HTTPS. Please open the app via an https URL (e.g., using an ngrok/Cloudflare tunnel) to enable microphone access on mobile."
-        );
-        return;
-      }
-
-      // Check for browser support first
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert(
-          "Your browser does not support voice recording. Please use a modern browser or upload an audio file instead."
-        );
-        return;
-      }
-
       // Check if getUserMedia is available
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         alert(

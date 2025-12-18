@@ -30,9 +30,6 @@ export default function PersonCard({
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const hasAutoPlayed = useRef(false);
-  const isIOS =
-    typeof navigator !== "undefined" &&
-    /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -47,11 +44,23 @@ export default function PersonCard({
         "background-music"
       ) as HTMLAudioElement;
       if (backgroundMusic) {
-        if (isIOS) {
-          backgroundMusic.play().catch(() => {});
-        } else {
-          fadeVolume(backgroundMusic, 1.0, 500);
-        }
+        const startVolume = backgroundMusic.volume;
+        const targetVolume = 1.0;
+        const volumeChange = targetVolume - startVolume;
+        const steps = 20;
+        const stepDuration = 500 / steps;
+        let currentStep = 0;
+
+        const fadeInterval = setInterval(() => {
+          currentStep++;
+          if (currentStep >= steps) {
+            backgroundMusic.volume = targetVolume;
+            clearInterval(fadeInterval);
+          } else {
+            backgroundMusic.volume =
+              startVolume + (volumeChange * currentStep) / steps;
+          }
+        }, stepDuration);
       }
 
       // Notify parent that this card has ended
@@ -131,28 +140,13 @@ export default function PersonCard({
         audioRef.current.pause();
         // Restore background music volume with fade
         if (backgroundMusic) {
-          if (isIOS) {
-            backgroundMusic.play().catch(() => {});
-          } else {
-            backgroundMusic.volume = Math.max(
-              backgroundMusic.volume || 0.4,
-              0.4
-            );
-            fadeVolume(backgroundMusic, 1.0, 500);
-          }
+          fadeVolume(backgroundMusic, 1.0, 500);
         }
       } else {
-        audioRef.current.play().catch((err) => {
-          console.error("Error playing audio:", err);
-        });
+        audioRef.current.play();
         // Reduce background music volume to 40% with fade
         if (backgroundMusic) {
-          if (isIOS) {
-            backgroundMusic.pause();
-          } else {
-            backgroundMusic.volume = backgroundMusic.volume || 1.0;
-            fadeVolume(backgroundMusic, 0.4, 500);
-          }
+          fadeVolume(backgroundMusic, 0.4, 500);
         }
       }
       setIsPlaying(!isPlaying);
@@ -182,9 +176,7 @@ export default function PersonCard({
 
     // Auto-play when clicking to seek
     if (!isPlaying) {
-      audio.play().catch((err) => {
-        console.error("Error playing audio:", err);
-      });
+      audio.play();
       setIsPlaying(true);
 
       // Reduce background music volume when starting playback
@@ -192,12 +184,7 @@ export default function PersonCard({
         "background-music"
       ) as HTMLAudioElement;
       if (backgroundMusic) {
-        if (isIOS) {
-          backgroundMusic.pause();
-        } else {
-          backgroundMusic.volume = backgroundMusic.volume || 1.0;
-          fadeVolume(backgroundMusic, 0.4, 500);
-        }
+        fadeVolume(backgroundMusic, 0.4, 500);
       }
     }
   };

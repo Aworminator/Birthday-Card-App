@@ -146,9 +146,7 @@ export default function AddEditModal({
             </label>
             {requiresHttps && (
               <div className="mb-3 rounded-xl border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-                Recording requires HTTPS on mobile. Open this app via an HTTPS
-                URL (e.g., ngrok or Cloudflare Tunnel). Uploading an audio file
-                works without HTTPS.
+                Recording requires HTTPS on mobile. Open this app via an HTTPS URL (e.g., ngrok or Cloudflare Tunnel). Uploading an audio file works without HTTPS.
               </div>
             )}
             <AudioUpload

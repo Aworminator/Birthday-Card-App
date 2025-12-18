@@ -167,18 +167,6 @@ export default function ProjectPage() {
     }
   }, [viewMode, themeMode, background]);
 
-  useEffect(() => {
-    // Ensure background music volume is set to 1.0 when in view mode
-    if (viewMode) {
-      const audio = document.getElementById(
-        "background-music"
-      ) as HTMLAudioElement;
-      if (audio) {
-        audio.volume = 1.0;
-      }
-    }
-  }, [viewMode]);
-
   const fetchCards = async () => {
     setLoadError(null);
     try {
@@ -362,16 +350,6 @@ export default function ProjectPage() {
     setBackground(savedTheme);
     setViewMode(true);
 
-    // Initialize background music volume to 1.0
-    setTimeout(() => {
-      const audio = document.getElementById(
-        "background-music"
-      ) as HTMLAudioElement;
-      if (audio) {
-        audio.volume = 1.0;
-      }
-    }, 50);
-
     // In automatic mode, start playing music automatically
     if (automaticMode) {
       setIsPlaying(true);
@@ -446,33 +424,8 @@ export default function ProjectPage() {
 
   const copyShareLink = () => {
     if (shareUrl) {
-      // Use a fallback method for better mobile support
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard
-          .writeText(shareUrl)
-          .then(() => {
-            alert("Link copied to clipboard!");
-          })
-          .catch(() => {
-            // Fallback for older browsers
-            const textarea = document.createElement("textarea");
-            textarea.value = shareUrl;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textarea);
-            alert("Link copied to clipboard!");
-          });
-      } else {
-        // Fallback for very old browsers
-        const textarea = document.createElement("textarea");
-        textarea.value = shareUrl;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
-        alert("Link copied to clipboard!");
-      }
+      navigator.clipboard.writeText(shareUrl);
+      alert("Link copied to clipboard!");
     }
   };
 
@@ -507,33 +460,8 @@ export default function ProjectPage() {
   const copyInviteInfo = () => {
     if (inviteUrl && inviteCode) {
       const message = `Add your card to my project!\n\nLink: ${inviteUrl}\nAccess Code: ${inviteCode}`;
-      // Use a fallback method for better mobile support
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard
-          .writeText(message)
-          .then(() => {
-            alert("Invite link and code copied to clipboard!");
-          })
-          .catch(() => {
-            // Fallback for older browsers
-            const textarea = document.createElement("textarea");
-            textarea.value = message;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textarea);
-            alert("Invite link and code copied to clipboard!");
-          });
-      } else {
-        // Fallback for very old browsers
-        const textarea = document.createElement("textarea");
-        textarea.value = message;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
-        alert("Invite link and code copied to clipboard!");
-      }
+      navigator.clipboard.writeText(message);
+      alert("Invite link and code copied to clipboard!");
     }
   };
 
@@ -1171,10 +1099,7 @@ export default function ProjectPage() {
                 const audio = document.getElementById(
                   "background-music"
                 ) as HTMLAudioElement;
-                if (audio) {
-                  audio.pause();
-                  audio.volume = 1.0;
-                }
+                if (audio) audio.pause();
               }}
               className="flex items-center gap-1 md:gap-2 px-2 md:px-6 py-2 md:py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all shadow-lg font-semibold text-xs md:text-base"
             >
@@ -1201,14 +1126,9 @@ export default function ProjectPage() {
               id="background-music"
               src={getMusicUrl() || undefined}
               loop
-              crossOrigin="anonymous"
               onError={(e) => {
                 console.error("Error loading music:", e);
                 setIsPlaying(false);
-              }}
-              onCanPlayThrough={(e) => {
-                const audio = e.currentTarget as HTMLAudioElement;
-                audio.volume = 1.0;
               }}
             />
           )}
