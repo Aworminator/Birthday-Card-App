@@ -77,25 +77,10 @@ export default function PersonCard({
     audio.addEventListener("loadedmetadata", updateDuration);
     audio.addEventListener("ended", handleEnded);
 
-    // Pause this card when another card starts playing
-    const onOtherCardPlay = (e: Event) => {
-      try {
-        const detail = (e as CustomEvent<string>).detail;
-        if (detail && detail !== card.id) {
-          if (!audio.paused) {
-            audio.pause();
-            setIsPlaying(false);
-          }
-        }
-      } catch {}
-    };
-    window.addEventListener("card-play", onOtherCardPlay as EventListener);
-
     return () => {
       audio.removeEventListener("timeupdate", updateTime);
       audio.removeEventListener("loadedmetadata", updateDuration);
       audio.removeEventListener("ended", handleEnded);
-      window.removeEventListener("card-play", onOtherCardPlay as EventListener);
     };
   }, [automaticMode, onCardEnded, card.id]);
 
@@ -124,18 +109,9 @@ export default function PersonCard({
       if (isPlaying) {
         audioRef.current.pause();
       } else {
-        audioRef.current
-          .play()
-          .then(() => {
-            try {
-              window.dispatchEvent(
-                new CustomEvent<string>("card-play", { detail: card.id })
-              );
-            } catch {}
-          })
-          .catch((err) => {
-            console.error("Error playing audio:", err);
-          });
+        audioRef.current.play().catch((err) => {
+          console.error("Error playing audio:", err);
+        });
       }
       setIsPlaying(!isPlaying);
     }
@@ -164,18 +140,9 @@ export default function PersonCard({
 
     // Auto-play when clicking to seek
     if (!isPlaying) {
-      audio
-        .play()
-        .then(() => {
-          try {
-            window.dispatchEvent(
-              new CustomEvent<string>("card-play", { detail: card.id })
-            );
-          } catch {}
-        })
-        .catch((err) => {
-          console.error("Error playing audio:", err);
-        });
+      audio.play().catch((err) => {
+        console.error("Error playing audio:", err);
+      });
       setIsPlaying(true);
     }
   };
