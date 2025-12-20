@@ -148,10 +148,6 @@ export default function InvitePage() {
         throw new Error(result?.error || "Submission failed");
       }
 
-      setToastType("success");
-      setToastMessage("Card submitted successfully!");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
       setStep("success");
     } catch (error) {
       console.error("Submission error:", error);
@@ -380,36 +376,6 @@ export default function InvitePage() {
   // Success step
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4">
-      {showToast && (
-        <div className="fixed top-4 right-4 z-50">
-          <div
-            className={`px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 ${
-              toastType === "error"
-                ? "bg-red-600 text-white"
-                : "bg-green-600 text-white"
-            }`}
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d={
-                  toastType === "error"
-                    ? "M6 18L18 6M6 6l12 12"
-                    : "M5 13l4 4L19 7"
-                }
-              />
-            </svg>
-            <span className="text-sm font-semibold">{toastMessage}</span>
-          </div>
-        </div>
-      )}
       <div className="max-w-md w-full">
         <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
           <div className="text-6xl mb-4">✅</div>
@@ -422,14 +388,6 @@ export default function InvitePage() {
           </p>
           <div className="text-sm text-gray-500">
             You can close this page now.
-          </div>
-          <div className="mt-6">
-            <button
-              onClick={() => router.push("/")}
-              className="px-5 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-600 hover:to-pink-700 transition-all shadow-md hover:shadow-lg font-semibold"
-            >
-              Return to Home
-            </button>
           </div>
         </div>
       </div>

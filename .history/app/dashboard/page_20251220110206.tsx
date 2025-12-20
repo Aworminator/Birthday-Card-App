@@ -10,8 +10,6 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
-  const [toastMessage, setToastMessage] = useState<string>("");
-  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     checkUser();
@@ -100,9 +98,6 @@ export default function Dashboard() {
       if (error) throw error;
       // Optimistically update the list
       setProjects((prev) => prev.filter((p) => p.id !== projectId));
-      setToastMessage("CircleCard deleted");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
     } catch (err) {
       console.error("Error deleting project:", err);
       alert("Failed to delete CircleCard. Please try again.");
@@ -128,26 +123,6 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-      {showToast && (
-        <div className="fixed top-4 right-4 z-50">
-          <div className="px-4 py-3 bg-green-600 text-white rounded-lg shadow-lg flex items-center gap-2">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            <span className="text-sm font-semibold">{toastMessage}</span>
-          </div>
-        </div>
-      )}
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -247,46 +222,21 @@ export default function Dashboard() {
                       project.theme.slice(1)}
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                    Click to edit
-                  </div>
-                  <button
-                    title="Delete CircleCard"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteProject(project.id, project.name);
-                    }}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 border border-red-100 hover:border-red-200 transition-colors"
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-9 0h10"
-                      />
-                    </svg>
-                    <span className="text-sm font-semibold">Delete</span>
-                  </button>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Click to edit
                 </div>
               </div>
             ))}

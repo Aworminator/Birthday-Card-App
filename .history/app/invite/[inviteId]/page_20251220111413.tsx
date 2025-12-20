@@ -384,9 +384,7 @@ export default function InvitePage() {
         <div className="fixed top-4 right-4 z-50">
           <div
             className={`px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 ${
-              toastType === "error"
-                ? "bg-red-600 text-white"
-                : "bg-green-600 text-white"
+              toastType === "error" ? "bg-red-600 text-white" : "bg-green-600 text-white"
             }`}
           >
             <svg
@@ -399,11 +397,7 @@ export default function InvitePage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d={
-                  toastType === "error"
-                    ? "M6 18L18 6M6 6l12 12"
-                    : "M5 13l4 4L19 7"
-                }
+                d={toastType === "error" ? "M6 18L18 6M6 6l12 12" : "M5 13l4 4L19 7"}
               />
             </svg>
             <span className="text-sm font-semibold">{toastMessage}</span>

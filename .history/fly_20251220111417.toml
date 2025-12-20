@@ -6,9 +6,6 @@ primary_region = "iad" # Change to your closest region
 
 [build]
   # Uses the Dockerfile in this repo
-  [build.args]
-    NEXT_PUBLIC_SUPABASE_URL = "https://zalhutiddpzxhvhoxhjh.supabase.co"
-    NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphbGh1dGlkZHB6eGh2aG94aGpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwNDQ4NjgsImV4cCI6MjA3ODYyMDg2OH0.95sILdHM3jbEOasHt6GF69AjOE1GOXLK66wQ62-_6Ws"
 
 [env]
   PORT = "3000"

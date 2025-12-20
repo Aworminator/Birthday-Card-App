@@ -128,7 +128,7 @@ export default function AddEditModal({
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={"Enter your name."}
+              placeholder={editCard ? "Enter your name." : "Enter their name"}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-black"
               required
             />

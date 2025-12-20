@@ -22,16 +22,10 @@ export default function InvitePage() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [toastMessage, setToastMessage] = useState<string>("");
-  const [showToast, setShowToast] = useState(false);
-  const [toastType, setToastType] = useState<"error" | "success">("error");
 
   const verifyCode = async () => {
     if (code.length !== 4) {
-      setToastType("error");
-      setToastMessage("Please enter a 4-digit code");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
+      alert("Please enter a 4-digit code");
       return;
     }
 
@@ -45,13 +39,8 @@ export default function InvitePage() {
       });
       const result = await res.json();
       if (!res.ok || !result?.ok) {
-        setToastType("error");
-        setToastMessage(
-          result?.error || "Invalid code. Please check and try again."
-        );
-        setShowToast(true);
+        alert(result?.error || "Invalid code. Please check and try again.");
         setVerifying(false);
-        setTimeout(() => setShowToast(false), 3000);
         return;
       }
       setInviteSession({
@@ -63,10 +52,7 @@ export default function InvitePage() {
       setStep("submit");
     } catch (error) {
       console.error("Verification error:", error);
-      setToastType("error");
-      setToastMessage("An error occurred. Please try again.");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      alert("An error occurred. Please try again.");
     } finally {
       setVerifying(false);
     }
@@ -76,26 +62,17 @@ export default function InvitePage() {
     e.preventDefault();
 
     if (!name.trim()) {
-      setToastType("error");
-      setToastMessage("Please enter your name");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
+      alert("Please enter your name");
       return;
     }
 
     if (!imageFile) {
-      setToastType("error");
-      setToastMessage("Please upload a photo");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
+      alert("Please upload a photo");
       return;
     }
 
     if (!audioFile) {
-      setToastType("error");
-      setToastMessage("Please record or upload an audio message");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
+      alert("Please record or upload an audio message");
       return;
     }
 
@@ -148,17 +125,10 @@ export default function InvitePage() {
         throw new Error(result?.error || "Submission failed");
       }
 
-      setToastType("success");
-      setToastMessage("Card submitted successfully!");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
       setStep("success");
     } catch (error) {
       console.error("Submission error:", error);
-      setToastType("error");
-      setToastMessage("Failed to submit your card. Please try again.");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      alert("Failed to submit your card. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -167,36 +137,6 @@ export default function InvitePage() {
   if (step === "verify") {
     return (
       <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4">
-        {showToast && (
-          <div className="fixed top-4 right-4 z-50">
-            <div
-              className={`px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 ${
-                toastType === "error"
-                  ? "bg-red-600 text-white"
-                  : "bg-green-600 text-white"
-              }`}
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d={
-                    toastType === "error"
-                      ? "M6 18L18 6M6 6l12 12"
-                      : "M5 13l4 4L19 7"
-                  }
-                />
-              </svg>
-              <span className="text-sm font-semibold">{toastMessage}</span>
-            </div>
-          </div>
-        )}
         <div className="max-w-md w-full">
           <div className="bg-white rounded-2xl shadow-2xl p-8">
             <div className="text-center mb-8">
@@ -255,36 +195,6 @@ export default function InvitePage() {
   if (step === "submit") {
     return (
       <main className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4 py-12">
-        {showToast && (
-          <div className="fixed top-4 right-4 z-50">
-            <div
-              className={`px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 ${
-                toastType === "error"
-                  ? "bg-red-600 text-white"
-                  : "bg-green-600 text-white"
-              }`}
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d={
-                    toastType === "error"
-                      ? "M6 18L18 6M6 6l12 12"
-                      : "M5 13l4 4L19 7"
-                  }
-                />
-              </svg>
-              <span className="text-sm font-semibold">{toastMessage}</span>
-            </div>
-          </div>
-        )}
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-2xl shadow-2xl p-8">
             <div className="text-center mb-8">
@@ -380,36 +290,6 @@ export default function InvitePage() {
   // Success step
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4">
-      {showToast && (
-        <div className="fixed top-4 right-4 z-50">
-          <div
-            className={`px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 ${
-              toastType === "error"
-                ? "bg-red-600 text-white"
-                : "bg-green-600 text-white"
-            }`}
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d={
-                  toastType === "error"
-                    ? "M6 18L18 6M6 6l12 12"
-                    : "M5 13l4 4L19 7"
-                }
-              />
-            </svg>
-            <span className="text-sm font-semibold">{toastMessage}</span>
-          </div>
-        </div>
-      )}
       <div className="max-w-md w-full">
         <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
           <div className="text-6xl mb-4">✅</div>
@@ -422,14 +302,6 @@ export default function InvitePage() {
           </p>
           <div className="text-sm text-gray-500">
             You can close this page now.
-          </div>
-          <div className="mt-6">
-            <button
-              onClick={() => router.push("/")}
-              className="px-5 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-600 hover:to-pink-700 transition-all shadow-md hover:shadow-lg font-semibold"
-            >
-              Return to Home
-            </button>
           </div>
         </div>
       </div>

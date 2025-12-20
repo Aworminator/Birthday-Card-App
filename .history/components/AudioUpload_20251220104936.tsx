@@ -350,7 +350,12 @@ export default function AudioUpload({
       ) : audioUrl ? (
         <div className="space-y-3">
           <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl p-6">
-            <audio ref={audioRef} src={audioUrl} preload="auto" playsInline />
+            <audio
+              ref={audioRef}
+              src={audioUrl}
+              preload="auto"
+              playsInline
+            />
 
             <div className="flex items-center gap-4 mb-4">
               <button
