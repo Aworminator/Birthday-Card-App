@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-const debugAuth = process.env.NEXT_PUBLIC_DEBUG_AUTH === "true";
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
 export default function WelcomePage() {
   const router = useRouter();
@@ -13,15 +11,6 @@ export default function WelcomePage() {
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showUpdates, setShowUpdates] = useState(false);
-
-  // Updates log entries (add new items when requested)
-  const updatesLog = [
-    {
-      date: "Dec 22, 2025",
-      message: "Google and Facebook authorization added to create an account",
-    },
-  ];
 
   // Password validation
   const validatePassword = (pwd: string) => {
@@ -375,33 +364,6 @@ export default function WelcomePage() {
 
         {/* Features */}
         <div className="mt-8 text-center">
-          {debugAuth && (
-            <div className="mb-6 p-4 text-left bg-yellow-50 border border-yellow-200 rounded-lg text-xs text-gray-700">
-              <div className="font-semibold mb-2">Auth Debug</div>
-              <div className="space-y-1">
-                <div>
-                  <span className="font-mono font-semibold">Supabase URL:</span>{" "}
-                  {supabaseUrl || "(missing NEXT_PUBLIC_SUPABASE_URL)"}
-                </div>
-                <div>
-                  <span className="font-mono font-semibold">
-                    Expected Google/Facebook Redirect URI:
-                  </span>{" "}
-                  {supabaseUrl
-                    ? `${supabaseUrl}/auth/v1/callback`
-                    : "(unavailable)"}
-                </div>
-                <div>
-                  <span className="font-mono font-semibold">
-                    App return URL (redirectTo):
-                  </span>{" "}
-                  {typeof window !== "undefined"
-                    ? `${window.location.origin}/auth/callback`
-                    : "/auth/callback"}
-                </div>
-              </div>
-            </div>
-          )}
           <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
             <div>
               <div className="text-2xl mb-1">🎨</div>
@@ -416,51 +378,7 @@ export default function WelcomePage() {
               <div>Voice Messages</div>
             </div>
           </div>
-
-          {/* Updates button */}
-          <div className="mt-8">
-            <button
-              type="button"
-              onClick={() => setShowUpdates(true)}
-              className="px-6 py-3 border-2 border-gray-300 rounded-xl hover:border-gray-400 transition-all bg-white text-gray-900 font-semibold shadow-sm"
-            >
-              Updates
-            </button>
-          </div>
         </div>
-
-        {/* Updates Modal */}
-        {showUpdates && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div
-              className="absolute inset-0 bg-black/40"
-              onClick={() => setShowUpdates(false)}
-            />
-            <div className="relative z-10 w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900">Updates</h3>
-                <button
-                  aria-label="Close updates"
-                  className="text-gray-500 hover:text-gray-700"
-                  onClick={() => setShowUpdates(false)}
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="space-y-4">
-                {updatesLog.map((u, i) => (
-                  <div
-                    key={i}
-                    className="border border-gray-200 rounded-xl p-4 text-left"
-                  >
-                    <div className="text-xs text-gray-500 mb-1">{u.date}</div>
-                    <div className="text-sm text-gray-900">{u.message}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </main>
   );

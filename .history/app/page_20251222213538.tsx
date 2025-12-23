@@ -449,10 +449,7 @@ export default function WelcomePage() {
               </div>
               <div className="space-y-4">
                 {updatesLog.map((u, i) => (
-                  <div
-                    key={i}
-                    className="border border-gray-200 rounded-xl p-4 text-left"
-                  >
+                  <div key={i} className="border border-gray-200 rounded-xl p-4 text-left">
                     <div className="text-xs text-gray-500 mb-1">{u.date}</div>
                     <div className="text-sm text-gray-900">{u.message}</div>
                   </div>

@@ -97,36 +97,46 @@ export default function SharePage() {
   useEffect(() => {
     if (!project) return;
 
-    let cleanup: (() => void) | undefined;
+    // Snowflakes for Christmas
+    if (project.theme === "christmas") {
+      const snowContainer = document.getElementById("snow");
+      if (!snowContainer) return;
 
-    const startSnow = (container: HTMLElement) => {
-      if (debugAnimations)
-        console.log("[share] snow container found, starting animations");
+      if (debugAnimations) console.log("[share] snow container found, starting animations");
+
       const createSnowflake = () => {
         const snowflake = document.createElement("div");
         snowflake.classList.add("snowflake");
         snowflake.textContent = "❄";
+
         const size = Math.random() * 1.5 + 0.8;
         snowflake.style.fontSize = `${size}rem`;
         snowflake.style.left = Math.random() * 100 + "vw";
         const duration = Math.random() * 5 + 5;
         snowflake.style.animationDuration = `${duration}s`;
         snowflake.style.animationDelay = Math.random() * 5 + "s";
-        container.appendChild(snowflake);
+
+        snowContainer.appendChild(snowflake);
         setTimeout(() => snowflake.remove(), duration * 2000);
       };
+
+      // Seed initial flakes for immediate visual feedback
       for (let i = 0; i < 8; i++) createSnowflake();
       const snowInterval = setInterval(createSnowflake, 300);
-      cleanup = () => {
+      return () => {
         clearInterval(snowInterval);
-        container.innerHTML = "";
+        snowContainer.innerHTML = "";
       };
-    };
+    }
 
-    const startBalloons = (container: HTMLElement) => {
-      if (debugAnimations)
-        console.log("[share] balloon container found, starting animations");
+    // Balloons for Birthday
+    if (project.theme === "birthday") {
+      const balloonContainer = document.getElementById("balloons");
+      if (!balloonContainer) return;
       const colors = ["#ff4d4d", "#ff9f1c", "#2ec4b6", "#9d4edd", "#ffbf00"];
+
+      if (debugAnimations) console.log("[share] balloon container found, starting animations");
+
       const createBalloon = () => {
         const balloon = document.createElement("div");
         balloon.classList.add("balloon");
@@ -140,42 +150,18 @@ export default function SharePage() {
         const duration = Math.random() * 6 + 6;
         balloon.style.animationDuration = `${duration}s`;
         balloon.style.animationTimingFunction = "ease-in-out";
-        container.appendChild(balloon);
+        balloonContainer.appendChild(balloon);
         setTimeout(() => balloon.remove(), duration * 1000);
       };
+
+      // Seed initial balloons for immediate visual feedback
       for (let i = 0; i < 5; i++) createBalloon();
       const balloonInterval = setInterval(createBalloon, 900);
-      cleanup = () => {
+      return () => {
         clearInterval(balloonInterval);
-        container.innerHTML = "";
+        balloonContainer.innerHTML = "";
       };
-    };
-
-    const ensureContainerThenStart = () => {
-      const id =
-        project.theme === "christmas"
-          ? "snow"
-          : project.theme === "birthday"
-          ? "balloons"
-          : null;
-      if (!id) return;
-      const container = document.getElementById(id) as HTMLElement | null;
-      if (!container) {
-        if (debugAnimations)
-          console.log(`[share] waiting for container #${id}`);
-        setTimeout(ensureContainerThenStart, 50);
-        return;
-      }
-      if (project.theme === "christmas") startSnow(container);
-      if (project.theme === "birthday") startBalloons(container);
-    };
-
-    // Ensure DOM is committed before querying containers
-    requestAnimationFrame(ensureContainerThenStart);
-
-    return () => {
-      if (cleanup) cleanup();
-    };
+    }
   }, [project?.theme]);
 
   if (isLoading) {

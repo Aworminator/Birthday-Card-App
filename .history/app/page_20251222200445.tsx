@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-const debugAuth = process.env.NEXT_PUBLIC_DEBUG_AUTH === "true";
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
 export default function WelcomePage() {
   const router = useRouter();
@@ -13,15 +11,6 @@ export default function WelcomePage() {
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showUpdates, setShowUpdates] = useState(false);
-
-  // Updates log entries (add new items when requested)
-  const updatesLog = [
-    {
-      date: "Dec 22, 2025",
-      message: "Google and Facebook authorization added to create an account",
-    },
-  ];
 
   // Password validation
   const validatePassword = (pwd: string) => {
@@ -302,9 +291,7 @@ export default function WelcomePage() {
           {/* Divider */}
           <div className="my-6 flex items-center">
             <div className="flex-1 h-px bg-gray-200" />
-            <span className="px-3 text-xs uppercase text-gray-500">
-              Or continue with
-            </span>
+            <span className="px-3 text-xs uppercase text-gray-500">Or continue with</span>
             <div className="flex-1 h-px bg-gray-200" />
           </div>
 
@@ -316,27 +303,11 @@ export default function WelcomePage() {
               onClick={() => handleOAuth("google")}
               className="w-full px-6 py-3 border-2 border-gray-300 rounded-xl hover:border-gray-400 transition-all bg-white text-gray-900 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 48 48"
-                className="w-5 h-5"
-              >
-                <path
-                  fill="#FFC107"
-                  d="M43.611 20.083H42V20H24v8h11.303C33.676 31.258 29.223 34 24 34c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.153 7.961 3.039l5.657-5.657C34.869 4.108 29.706 2 24 2 11.85 2 2 11.85 2 24s9.85 22 22 22 22-9.85 22-22c0-1.341-.138-2.651-.389-3.917z"
-                />
-                <path
-                  fill="#FF3D00"
-                  d="M6.306 14.691l6.571 4.814C14.297 16.108 18.757 14 24 14c3.059 0 5.842 1.153 7.961 3.039l5.657-5.657C34.869 4.108 29.706 2 24 2 15.317 2 7.957 6.76 4.306 14.691z"
-                />
-                <path
-                  fill="#4CAF50"
-                  d="M24 46c5.166 0 9.86-1.977 13.409-5.191l-6.19-5.238C29.172 36.477 26.735 37.5 24 37.5 18.805 37.5 14.373 34.127 12.71 29.5l-6.49 5.002C9.828 41.289 16.428 46 24 46z"
-                />
-                <path
-                  fill="#1976D2"
-                  d="M43.611 20.083H42V20H24v8h11.303c-1.353 3.258-4.63 5.5-8.303 5.5-3.582 0-6.64-2.091-8.004-5.108l-6.49 5.002C14.373 34.127 18.805 37.5 24 37.5 29.223 37.5 33.676 34.758 35.303 32h.001c1.095-1.704 1.743-3.705 1.743-5.917 0-1.341-.138-2.651-.389-3.917z"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-5 h-5">
+                <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.676 31.258 29.223 34 24 34c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.153 7.961 3.039l5.657-5.657C34.869 4.108 29.706 2 24 2 11.85 2 2 11.85 2 24s9.85 22 22 22 22-9.85 22-22c0-1.341-.138-2.651-.389-3.917z"/>
+                <path fill="#FF3D00" d="M6.306 14.691l6.571 4.814C14.297 16.108 18.757 14 24 14c3.059 0 5.842 1.153 7.961 3.039l5.657-5.657C34.869 4.108 29.706 2 24 2 15.317 2 7.957 6.76 4.306 14.691z"/>
+                <path fill="#4CAF50" d="M24 46c5.166 0 9.86-1.977 13.409-5.191l-6.19-5.238C29.172 36.477 26.735 37.5 24 37.5 18.805 37.5 14.373 34.127 12.71 29.5l-6.49 5.002C9.828 41.289 16.428 46 24 46z"/>
+                <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-1.353 3.258-4.63 5.5-8.303 5.5-3.582 0-6.64-2.091-8.004-5.108l-6.49 5.002C14.373 34.127 18.805 37.5 24 37.5 29.223 37.5 33.676 34.758 35.303 32h.001c1.095-1.704 1.743-3.705 1.743-5.917 0-1.341-.138-2.651-.389-3.917z"/>
               </svg>
               Continue with Google
             </button>
@@ -346,12 +317,8 @@ export default function WelcomePage() {
               onClick={() => handleOAuth("facebook")}
               className="w-full px-6 py-3 border-2 border-gray-300 rounded-xl hover:border-gray-400 transition-all bg-white text-gray-900 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                className="w-5 h-5 fill-[#1877F2]"
-              >
-                <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.09 4.388 23.094 10.125 24v-8.438H7.078V12.07h3.047V9.412c0-3.007 1.792-4.668 4.533-4.668 1.312 0 2.686.235 2.686.235v2.953h-1.513c-1.492 0-1.955.93-1.955 1.887v2.251h3.328l-.532 3.492h-2.796V24C19.612 23.094 24 18.09 24 12.073z" />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 fill-[#1877F2]">
+                <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.09 4.388 23.094 10.125 24v-8.438H7.078V12.07h3.047V9.412c0-3.007 1.792-4.668 4.533-4.668 1.312 0 2.686.235 2.686.235v2.953h-1.513c-1.492 0-1.955.93-1.955 1.887v2.251h3.328l-.532 3.492h-2.796V24C19.612 23.094 24 18.09 24 12.073z"/>
               </svg>
               Continue with Facebook
             </button>
@@ -375,33 +342,6 @@ export default function WelcomePage() {
 
         {/* Features */}
         <div className="mt-8 text-center">
-          {debugAuth && (
-            <div className="mb-6 p-4 text-left bg-yellow-50 border border-yellow-200 rounded-lg text-xs text-gray-700">
-              <div className="font-semibold mb-2">Auth Debug</div>
-              <div className="space-y-1">
-                <div>
-                  <span className="font-mono font-semibold">Supabase URL:</span>{" "}
-                  {supabaseUrl || "(missing NEXT_PUBLIC_SUPABASE_URL)"}
-                </div>
-                <div>
-                  <span className="font-mono font-semibold">
-                    Expected Google/Facebook Redirect URI:
-                  </span>{" "}
-                  {supabaseUrl
-                    ? `${supabaseUrl}/auth/v1/callback`
-                    : "(unavailable)"}
-                </div>
-                <div>
-                  <span className="font-mono font-semibold">
-                    App return URL (redirectTo):
-                  </span>{" "}
-                  {typeof window !== "undefined"
-                    ? `${window.location.origin}/auth/callback`
-                    : "/auth/callback"}
-                </div>
-              </div>
-            </div>
-          )}
           <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
             <div>
               <div className="text-2xl mb-1">🎨</div>
@@ -416,51 +356,7 @@ export default function WelcomePage() {
               <div>Voice Messages</div>
             </div>
           </div>
-
-          {/* Updates button */}
-          <div className="mt-8">
-            <button
-              type="button"
-              onClick={() => setShowUpdates(true)}
-              className="px-6 py-3 border-2 border-gray-300 rounded-xl hover:border-gray-400 transition-all bg-white text-gray-900 font-semibold shadow-sm"
-            >
-              Updates
-            </button>
-          </div>
         </div>
-
-        {/* Updates Modal */}
-        {showUpdates && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div
-              className="absolute inset-0 bg-black/40"
-              onClick={() => setShowUpdates(false)}
-            />
-            <div className="relative z-10 w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900">Updates</h3>
-                <button
-                  aria-label="Close updates"
-                  className="text-gray-500 hover:text-gray-700"
-                  onClick={() => setShowUpdates(false)}
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="space-y-4">
-                {updatesLog.map((u, i) => (
-                  <div
-                    key={i}
-                    className="border border-gray-200 rounded-xl p-4 text-left"
-                  >
-                    <div className="text-xs text-gray-500 mb-1">{u.date}</div>
-                    <div className="text-sm text-gray-900">{u.message}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </main>
   );

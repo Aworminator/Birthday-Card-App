@@ -59,7 +59,7 @@ export default function SharePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+
 
   const getDefaultMusicUrl = () => {
     switch (project?.theme) {
@@ -176,6 +176,81 @@ export default function SharePage() {
     return () => {
       if (cleanup) cleanup();
     };
+  }, [project?.theme]);
+    // Animate snow/balloons on shared view based on theme
+    useEffect(() => {
+      if (!project) return;
+
+      let cleanup: (() => void) | undefined;
+
+      const startSnow = (container: HTMLElement) => {
+        if (debugAnimations) console.log("[share] snow container found, starting animations");
+        const createSnowflake = () => {
+          const snowflake = document.createElement("div");
+          snowflake.classList.add("snowflake");
+          snowflake.textContent = "❄";
+          const size = Math.random() * 1.5 + 0.8;
+          snowflake.style.fontSize = `${size}rem`;
+          snowflake.style.left = Math.random() * 100 + "vw";
+          const duration = Math.random() * 5 + 5;
+          snowflake.style.animationDuration = `${duration}s`;
+          snowflake.style.animationDelay = Math.random() * 5 + "s";
+          container.appendChild(snowflake);
+          setTimeout(() => snowflake.remove(), duration * 2000);
+        };
+        for (let i = 0; i < 8; i++) createSnowflake();
+        const snowInterval = setInterval(createSnowflake, 300);
+        cleanup = () => {
+          clearInterval(snowInterval);
+          container.innerHTML = "";
+        };
+      };
+
+      const startBalloons = (container: HTMLElement) => {
+        if (debugAnimations) console.log("[share] balloon container found, starting animations");
+        const colors = ["#ff4d4d", "#ff9f1c", "#2ec4b6", "#9d4edd", "#ffbf00"];
+        const createBalloon = () => {
+          const balloon = document.createElement("div");
+          balloon.classList.add("balloon");
+          const size = Math.random() * 40 + 40;
+          balloon.style.width = `${size}px`;
+          balloon.style.height = `${size}px`;
+          balloon.style.borderRadius = "50%";
+          balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          balloon.style.left = Math.random() * 100 + "vw";
+          const duration = Math.random() * 6 + 6;
+          balloon.style.animationDuration = `${duration}s`;
+          balloon.style.animationTimingFunction = "ease-in-out";
+          container.appendChild(balloon);
+          setTimeout(() => balloon.remove(), duration * 1000);
+        };
+        for (let i = 0; i < 5; i++) createBalloon();
+        const balloonInterval = setInterval(createBalloon, 900);
+        cleanup = () => {
+          clearInterval(balloonInterval);
+          container.innerHTML = "";
+        };
+      };
+
+      const ensureContainerThenStart = () => {
+        const id = project.theme === "christmas" ? "snow" : project.theme === "birthday" ? "balloons" : null;
+        if (!id) return;
+        const container = document.getElementById(id) as HTMLElement | null;
+        if (!container) {
+          if (debugAnimations) console.log(`[share] waiting for container #${id}`);
+          setTimeout(ensureContainerThenStart, 50);
+          return;
+        }
+        if (project.theme === "christmas") startSnow(container);
+        if (project.theme === "birthday") startBalloons(container);
+      };
+
+      // Ensure DOM is committed before querying containers
+      requestAnimationFrame(ensureContainerThenStart);
+
+      return () => {
+        if (cleanup) cleanup();
+      };
   }, [project?.theme]);
 
   if (isLoading) {
