@@ -421,14 +421,11 @@ export default function ProjectPage() {
       const { nanoid } = await import("nanoid");
       const shareId = nanoid(10);
 
-      // Create or replace the project's single share session (upsert on project_id)
-      const { error } = await supabase.from("share_sessions").upsert(
-        {
-          share_id: shareId,
-          project_id: projectId,
-        },
-        { onConflict: "project_id" }
-      );
+      // Save share session to database
+      const { error } = await supabase.from("share_sessions").insert({
+        share_id: shareId,
+        project_id: projectId,
+      });
 
       if (error) {
         console.error("Error creating share session:", error);
@@ -1288,10 +1285,7 @@ export default function ProjectPage() {
                   newCards.map((c, idx) =>
                     supabase
                       .from("birthday_cards")
-                      .update({
-                        sort_order: idx,
-                        updated_at: new Date().toISOString(),
-                      })
+                      .update({ sort_order: idx, updated_at: new Date().toISOString() })
                       .eq("id", c.id)
                   )
                 );

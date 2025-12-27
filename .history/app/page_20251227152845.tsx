@@ -23,11 +23,6 @@ export default function WelcomePage() {
       date: "Dec 22, 2025",
       message: "Google and Facebook authorization added to create an account",
     },
-    {
-      date: "Dec 27, 2025",
-      message:
-        "Added drag and drop functionality to rearrange card order. Fixed link sharing and create account confirmation issues.",
-    },
   ];
 
   // Password validation
@@ -93,7 +88,9 @@ export default function WelcomePage() {
           },
         });
         if (error) throw error;
-        setToastMessage("Confirmation email sent. Check inbox and spam.");
+        setToastMessage(
+          "Confirmation email sent. Check inbox and spam."
+        );
         setShowToast(true);
         setTimeout(() => setShowToast(false), 2500);
       } else {
@@ -144,7 +141,9 @@ export default function WelcomePage() {
         },
       });
       if (error) throw error;
-      setToastMessage("Magic link sent. Check inbox and spam.");
+      setToastMessage(
+        "Magic link sent. Check inbox and spam."
+      );
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2500);
     } catch (error: any) {
@@ -170,7 +169,9 @@ export default function WelcomePage() {
         },
       });
       if (error) throw error;
-      setToastMessage("Confirmation resent. Check inbox and spam.");
+      setToastMessage(
+        "Confirmation resent. Check inbox and spam."
+      );
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2500);
     } catch (error: any) {

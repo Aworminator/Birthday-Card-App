@@ -41,8 +41,7 @@ export async function POST(req: Request) {
     }
 
     const nowIso = new Date().toISOString();
-    const isExpired =
-      sessionData.expires_at && sessionData.expires_at <= nowIso;
+    const isExpired = sessionData.expires_at && sessionData.expires_at <= nowIso;
     if (isExpired) {
       return NextResponse.json(
         { ok: false, error: "Invite has expired" },

@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     description: "Create and share personalized voice message cards",
   },
   icons: {
-    icon: "/icon.svg",
+    icon: "/app/icon.svg",
   },
 };
 

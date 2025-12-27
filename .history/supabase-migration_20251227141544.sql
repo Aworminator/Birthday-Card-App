@@ -22,26 +22,6 @@ BEGIN
   END IF;
 END $$;
 
--- Add sort_order column to birthday_cards for drag-and-drop ordering
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_name='birthday_cards' AND column_name='sort_order'
-  ) THEN
-    ALTER TABLE birthday_cards ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0;
-    -- Backfill sort_order per project based on created_at ascending
-    WITH ranked AS (
-      SELECT id, ROW_NUMBER() OVER (PARTITION BY project_id ORDER BY created_at ASC) - 1 AS rn
-      FROM birthday_cards
-    )
-    UPDATE birthday_cards bc
-    SET sort_order = ranked.rn
-    FROM ranked
-    WHERE bc.id = ranked.id;
-  END IF;
-END $$;
-
 -- Create share_sessions table
 CREATE TABLE IF NOT EXISTS share_sessions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -67,36 +47,8 @@ CREATE INDEX IF NOT EXISTS idx_birthday_cards_project_id ON birthday_cards(proje
 CREATE INDEX IF NOT EXISTS idx_birthday_cards_user_id ON birthday_cards(user_id);
 CREATE INDEX IF NOT EXISTS idx_share_sessions_share_id ON share_sessions(share_id);
 CREATE INDEX IF NOT EXISTS idx_share_sessions_project_id ON share_sessions(project_id);
--- Ensure only one share per project: remove duplicates, then enforce uniqueness
-DO $$
-BEGIN
-  -- Delete older share sessions, keep the most recent per project
-  WITH marked AS (
-    SELECT id,
-           ROW_NUMBER() OVER (PARTITION BY project_id ORDER BY created_at DESC, id DESC) AS rn
-    FROM share_sessions
-  )
-  DELETE FROM share_sessions s
-  USING marked m
-  WHERE s.id = m.id AND m.rn > 1;
-
-  -- Create unique index on project_id to enforce single active share per project
-  CREATE UNIQUE INDEX IF NOT EXISTS uniq_share_sessions_project_id ON share_sessions(project_id);
-END $$;
 CREATE INDEX IF NOT EXISTS idx_invite_sessions_invite_id ON invite_sessions(invite_id);
 CREATE INDEX IF NOT EXISTS idx_invite_sessions_project_id ON invite_sessions(project_id);
-
--- Add expires_at column to invite_sessions for automatic expiry (48 hours)
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_name='invite_sessions' AND column_name='expires_at'
-  ) THEN
-    ALTER TABLE invite_sessions ADD COLUMN expires_at TIMESTAMP WITH TIME ZONE DEFAULT (TIMEZONE('utc'::text, NOW()) + INTERVAL '48 hours');
-    CREATE INDEX IF NOT EXISTS idx_invite_sessions_expires_at ON invite_sessions(expires_at);
-  END IF;
-END $$;
 
 -- Enable Row Level Security
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
@@ -121,7 +73,6 @@ DROP POLICY IF EXISTS "Anyone can view cards of shared projects" ON birthday_car
 
 DROP POLICY IF EXISTS "Anyone can read share sessions" ON share_sessions;
 DROP POLICY IF EXISTS "Authenticated users can create share sessions for their projects" ON share_sessions;
-DROP POLICY IF EXISTS "Authenticated users can update share sessions for their projects" ON share_sessions;
 
 DROP POLICY IF EXISTS "Anyone can read invite sessions" ON invite_sessions;
 DROP POLICY IF EXISTS "Authenticated users can create invite sessions for their projects" ON invite_sessions;
@@ -176,24 +127,6 @@ CREATE POLICY "Authenticated users can create share sessions for their projects"
     )
   );
 
--- Allow owners to update their project's share session (needed for upsert)
-CREATE POLICY "Authenticated users can update share sessions for their projects"
-  ON share_sessions FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM projects
-      WHERE projects.id = share_sessions.project_id
-      AND projects.user_id = auth.uid()
-    )
-  )
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM projects
-      WHERE projects.id = share_sessions.project_id
-      AND projects.user_id = auth.uid()
-    )
-  );
-
 -- Invite sessions policies
 CREATE POLICY "Anyone can read invite sessions"
   ON invite_sessions FOR SELECT
@@ -213,12 +146,6 @@ CREATE POLICY "Anyone can update invite session used status"
   ON invite_sessions FOR UPDATE
   USING (true)
   WITH CHECK (true);
-
--- Allow deletion of expired invites (needed for pg_cron cleanup)
-DROP POLICY IF EXISTS "Anyone can delete expired invites" ON invite_sessions;
-CREATE POLICY "Anyone can delete expired invites"
-  ON invite_sessions FOR DELETE
-  USING (expires_at IS NOT NULL AND expires_at < NOW());
 
 -- Public read access for shared projects and their cards
 -- Allow anyone (including anonymous users) to SELECT projects that have an active share_session
@@ -240,16 +167,3 @@ CREATE POLICY "Anyone can view cards of shared projects"
       WHERE share_sessions.project_id = birthday_cards.project_id
     )
   );
-
--- Schedule deletion of expired invites using pg_cron (runs hourly)
-CREATE EXTENSION IF NOT EXISTS pg_cron;
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'delete_expired_invites') THEN
-    PERFORM cron.schedule(
-      'delete_expired_invites',
-      '0 * * * *',
-      'DELETE FROM invite_sessions WHERE expires_at IS NOT NULL AND expires_at < NOW();'
-    );
-  END IF;
-END $$;

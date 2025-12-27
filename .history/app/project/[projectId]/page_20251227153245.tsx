@@ -421,14 +421,11 @@ export default function ProjectPage() {
       const { nanoid } = await import("nanoid");
       const shareId = nanoid(10);
 
-      // Create or replace the project's single share session (upsert on project_id)
-      const { error } = await supabase.from("share_sessions").upsert(
-        {
-          share_id: shareId,
-          project_id: projectId,
-        },
-        { onConflict: "project_id" }
-      );
+      // Save share session to database
+      const { error } = await supabase.from("share_sessions").insert({
+        share_id: shareId,
+        project_id: projectId,
+      });
 
       if (error) {
         console.error("Error creating share session:", error);

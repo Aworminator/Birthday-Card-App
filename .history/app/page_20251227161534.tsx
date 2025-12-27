@@ -21,13 +21,12 @@ export default function WelcomePage() {
   const updatesLog = [
     {
       date: "Dec 22, 2025",
-      message: "Google and Facebook authorization added to create an account",
+      message: "Added Google and Facebook OAuth authentication for account creation",
     },
     {
       date: "Dec 27, 2025",
-      message:
-        "Added drag and drop functionality to rearrange card order. Fixed link sharing and create account confirmation issues.",
-    },
+      message: "Added drag and drop functionality to rearrange card order. Fixed link sharing and account confirmation issues.",
+    }, 
   ];
 
   // Password validation

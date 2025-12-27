@@ -14,19 +14,12 @@ export default function WelcomePage() {
   const [authLoading, setAuthLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showUpdates, setShowUpdates] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string>("");
-  const [showToast, setShowToast] = useState(false);
 
   // Updates log entries (add new items when requested)
   const updatesLog = [
     {
       date: "Dec 22, 2025",
       message: "Google and Facebook authorization added to create an account",
-    },
-    {
-      date: "Dec 27, 2025",
-      message:
-        "Added drag and drop functionality to rearrange card order. Fixed link sharing and create account confirmation issues.",
     },
   ];
 
@@ -93,9 +86,7 @@ export default function WelcomePage() {
           },
         });
         if (error) throw error;
-        setToastMessage("Confirmation email sent. Check inbox and spam.");
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 2500);
+        alert("Check your email for the confirmation link!");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -130,57 +121,6 @@ export default function WelcomePage() {
     }
   };
 
-  const handleMagicLink = async () => {
-    if (!email) {
-      alert("Enter your email to receive a magic link.");
-      return;
-    }
-    setAuthLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) throw error;
-      setToastMessage("Magic link sent. Check inbox and spam.");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
-    } catch (error: any) {
-      console.error("Magic link error:", error);
-      alert(error.message || "Could not send magic link.");
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
-  const handleResendConfirmation = async () => {
-    if (!email) {
-      alert("Enter your email to resend the confirmation.");
-      return;
-    }
-    setAuthLoading(true);
-    try {
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) throw error;
-      setToastMessage("Confirmation resent. Check inbox and spam.");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
-    } catch (error: any) {
-      console.error("Resend confirmation error:", error);
-      alert(error.message || "Could not resend confirmation email.");
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
@@ -192,26 +132,6 @@ export default function WelcomePage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4">
       <div className="max-w-md w-full">
-        {showToast && (
-          <div className="fixed top-4 right-4 z-50">
-            <div className="px-4 py-3 bg-green-600 text-white rounded-lg shadow-lg flex items-center gap-2">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              <span className="text-sm font-semibold">{toastMessage}</span>
-            </div>
-          </div>
-        )}
         {/* Logo/Header */}
         <div className="text-center mb-12">
           <h1
@@ -379,31 +299,6 @@ export default function WelcomePage() {
               {authLoading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
             </button>
           </form>
-
-          {/* Passwordless / Resend options */}
-          <div className="mt-4 grid gap-2">
-            <button
-              type="button"
-              disabled={authLoading || !email}
-              onClick={handleMagicLink}
-              className="w-full px-6 py-3 border-2 border-purple-300 rounded-xl hover:border-purple-500 transition-all bg-white text-gray-900 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Email me a magic link
-            </button>
-            {isSignUp && (
-              <button
-                type="button"
-                disabled={authLoading || !email}
-                onClick={handleResendConfirmation}
-                className="w-full px-6 py-3 border-2 border-gray-300 rounded-xl hover:border-gray-400 transition-all bg-white text-gray-900 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Resend confirmation email
-              </button>
-            )}
-            <p className="text-xs text-gray-500 mt-2 text-center">
-              Tip: If you don’t see the email, check Spam or Promotions.
-            </p>
-          </div>
 
           {/* Divider */}
           <div className="my-6 flex items-center">

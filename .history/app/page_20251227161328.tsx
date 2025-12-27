@@ -24,10 +24,8 @@ export default function WelcomePage() {
       message: "Google and Facebook authorization added to create an account",
     },
     {
-      date: "Dec 27, 2025",
-      message:
-        "Added drag and drop functionality to rearrange card order. Fixed link sharing and create account confirmation issues.",
-    },
+      date:
+    }
   ];
 
   // Password validation

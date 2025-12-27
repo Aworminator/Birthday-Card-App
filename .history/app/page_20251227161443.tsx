@@ -25,9 +25,8 @@ export default function WelcomePage() {
     },
     {
       date: "Dec 27, 2025",
-      message:
-        "Added drag and drop functionality to rearrange card order. Fixed link sharing and create account confirmation issues.",
-    },
+      message: "Drag and drop to rearrange card order function has been added.  "
+    }
   ];
 
   // Password validation

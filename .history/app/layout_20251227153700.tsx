@@ -32,9 +32,6 @@ export const metadata: Metadata = {
     title: "Circle Cards",
     description: "Create and share personalized voice message cards",
   },
-  icons: {
-    icon: "/icon.svg",
-  },
 };
 
 export default function RootLayout({

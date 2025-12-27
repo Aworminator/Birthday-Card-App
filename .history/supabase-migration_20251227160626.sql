@@ -67,22 +67,6 @@ CREATE INDEX IF NOT EXISTS idx_birthday_cards_project_id ON birthday_cards(proje
 CREATE INDEX IF NOT EXISTS idx_birthday_cards_user_id ON birthday_cards(user_id);
 CREATE INDEX IF NOT EXISTS idx_share_sessions_share_id ON share_sessions(share_id);
 CREATE INDEX IF NOT EXISTS idx_share_sessions_project_id ON share_sessions(project_id);
--- Ensure only one share per project: remove duplicates, then enforce uniqueness
-DO $$
-BEGIN
-  -- Delete older share sessions, keep the most recent per project
-  WITH marked AS (
-    SELECT id,
-           ROW_NUMBER() OVER (PARTITION BY project_id ORDER BY created_at DESC, id DESC) AS rn
-    FROM share_sessions
-  )
-  DELETE FROM share_sessions s
-  USING marked m
-  WHERE s.id = m.id AND m.rn > 1;
-
-  -- Create unique index on project_id to enforce single active share per project
-  CREATE UNIQUE INDEX IF NOT EXISTS uniq_share_sessions_project_id ON share_sessions(project_id);
-END $$;
 CREATE INDEX IF NOT EXISTS idx_invite_sessions_invite_id ON invite_sessions(invite_id);
 CREATE INDEX IF NOT EXISTS idx_invite_sessions_project_id ON invite_sessions(project_id);
 
@@ -121,7 +105,6 @@ DROP POLICY IF EXISTS "Anyone can view cards of shared projects" ON birthday_car
 
 DROP POLICY IF EXISTS "Anyone can read share sessions" ON share_sessions;
 DROP POLICY IF EXISTS "Authenticated users can create share sessions for their projects" ON share_sessions;
-DROP POLICY IF EXISTS "Authenticated users can update share sessions for their projects" ON share_sessions;
 
 DROP POLICY IF EXISTS "Anyone can read invite sessions" ON invite_sessions;
 DROP POLICY IF EXISTS "Authenticated users can create invite sessions for their projects" ON invite_sessions;
@@ -168,24 +151,6 @@ CREATE POLICY "Anyone can read share sessions"
 
 CREATE POLICY "Authenticated users can create share sessions for their projects"
   ON share_sessions FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM projects
-      WHERE projects.id = share_sessions.project_id
-      AND projects.user_id = auth.uid()
-    )
-  );
-
--- Allow owners to update their project's share session (needed for upsert)
-CREATE POLICY "Authenticated users can update share sessions for their projects"
-  ON share_sessions FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM projects
-      WHERE projects.id = share_sessions.project_id
-      AND projects.user_id = auth.uid()
-    )
-  )
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM projects

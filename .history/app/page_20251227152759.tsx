@@ -14,19 +14,12 @@ export default function WelcomePage() {
   const [authLoading, setAuthLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showUpdates, setShowUpdates] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string>("");
-  const [showToast, setShowToast] = useState(false);
 
   // Updates log entries (add new items when requested)
   const updatesLog = [
     {
       date: "Dec 22, 2025",
       message: "Google and Facebook authorization added to create an account",
-    },
-    {
-      date: "Dec 27, 2025",
-      message:
-        "Added drag and drop functionality to rearrange card order. Fixed link sharing and create account confirmation issues.",
     },
   ];
 
@@ -93,9 +86,7 @@ export default function WelcomePage() {
           },
         });
         if (error) throw error;
-        setToastMessage("Confirmation email sent. Check inbox and spam.");
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 2500);
+        alert("Check your email for the confirmation link!");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -144,9 +135,7 @@ export default function WelcomePage() {
         },
       });
       if (error) throw error;
-      setToastMessage("Magic link sent. Check inbox and spam.");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
+      alert("Magic link sent! Check your email (and spam).\nUse the link to finish signing in.");
     } catch (error: any) {
       console.error("Magic link error:", error);
       alert(error.message || "Could not send magic link.");
@@ -170,9 +159,7 @@ export default function WelcomePage() {
         },
       });
       if (error) throw error;
-      setToastMessage("Confirmation resent. Check inbox and spam.");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
+      alert("Confirmation email resent! Please check your inbox (and spam).");
     } catch (error: any) {
       console.error("Resend confirmation error:", error);
       alert(error.message || "Could not resend confirmation email.");
@@ -192,26 +179,6 @@ export default function WelcomePage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4">
       <div className="max-w-md w-full">
-        {showToast && (
-          <div className="fixed top-4 right-4 z-50">
-            <div className="px-4 py-3 bg-green-600 text-white rounded-lg shadow-lg flex items-center gap-2">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              <span className="text-sm font-semibold">{toastMessage}</span>
-            </div>
-          </div>
-        )}
         {/* Logo/Header */}
         <div className="text-center mb-12">
           <h1
@@ -400,9 +367,6 @@ export default function WelcomePage() {
                 Resend confirmation email
               </button>
             )}
-            <p className="text-xs text-gray-500 mt-2 text-center">
-              Tip: If you don’t see the email, check Spam or Promotions.
-            </p>
           </div>
 
           {/* Divider */}
