@@ -28,8 +28,7 @@ export default function AuthCallback() {
 
         if (fragmentParams) {
           const access_token = fragmentParams.get("access_token") || undefined;
-          const refresh_token =
-            fragmentParams.get("refresh_token") || undefined;
+          const refresh_token = fragmentParams.get("refresh_token") || undefined;
           if (access_token && refresh_token) {
             const { data, error } = await supabase.auth.setSession({
               access_token,
